@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+*.pyc
+__pycache__
+db.sqlite3
+/env
+*.env
+.vscode
