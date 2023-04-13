@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+import uuid
 
 # Create your models here.
 class User(AbstractUser):
@@ -12,18 +13,26 @@ class User(AbstractUser):
     
 
 class Story(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255, null=True)
     content = models.TextField(null=True)
     story_tags = models.CharField(max_length=255, null=True)
     location = models.CharField(max_length=255, null=True)
     date = models.DateField(null= True)
+    
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     story = models.ForeignKey(Story, on_delete=models.CASCADE)
     liked_date = models.DateTimeField(auto_now_add=True)
 
+    class Meta: unique_together = ('user', 'story')
+
+
+
+
+'''
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
@@ -36,5 +45,5 @@ class Follow(models.Model):
     followed = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower_set')
     followed_date = models.DateTimeField(auto_now_add=True)
 
-
+'''
 
