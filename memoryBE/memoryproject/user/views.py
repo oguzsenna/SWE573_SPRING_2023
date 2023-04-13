@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework import status, permissions
 from rest_framework.exceptions import APIException, AuthenticationFailed
 from rest_framework.authentication import get_authorization_header
-from .serializers import UserSerializer, StorySerializer
-from .models import User, Story
+from .serializers import UserSerializer, StorySerializer, LikeSerializer
+from .models import User, Story, Like
 from .authentication import create_access_token, create_refresh_token, decode_access_token, decode_refresh_token
 
 
@@ -83,3 +83,28 @@ class StoryCreateAPIView(APIView):
             serializer.save(author=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class LikeCreateAPIView(APIView):
+    def post(self, request, story_id):
+        user = request.user
+        story = Story.objects.get(pk=story_id)
+        like = Like.objects.filter(user=user, story=story).first()
+        if like is not None:
+            serializer = LikeSerializer(like)
+            return Response(serializer.data)
+        else:
+            like = Like(user=user, story=story)
+            like.save()
+            serializer = LikeSerializer(like)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+class LikeDestroyAPIView(APIView):
+    def delete(self, request, story_id):
+        user = request.user
+        story = Story.objects.get(pk=story_id)
+        like = Like.objects.filter(user=user, story=story).first()
+        if like is not None:
+            like.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)

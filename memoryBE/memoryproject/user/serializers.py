@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from .models import User, Story
+from .models import User, Story, Like
 
 
 class UserSerializer(ModelSerializer):
@@ -35,3 +35,8 @@ class StorySerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         story = Story.objects.create(author=self.context['request'].user, **validated_data)
         return story
+    
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = '__all__'
