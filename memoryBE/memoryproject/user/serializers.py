@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from .models import User, Story, Like
+from .models import *
 
 
 class UserSerializer(ModelSerializer):
@@ -36,7 +36,8 @@ class StorySerializer(serializers.ModelSerializer):
         story = Story.objects.create(**validated_data)
         return story
     
-class LikeSerializer(serializers.ModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
+    
     class Meta:
-        model = Like
-        fields = '__all__'
+        model = Comment
+        fields = ['id', 'author', 'story', 'content', 'date']

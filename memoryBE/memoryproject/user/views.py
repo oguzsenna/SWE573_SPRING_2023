@@ -1,14 +1,17 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status, permissions
+from rest_framework import status, permissions, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import APIException, AuthenticationFailed
 from rest_framework.authentication import get_authorization_header
-from .serializers import UserSerializer, StorySerializer, LikeSerializer
-from .models import User, Story, Like
+from .serializers import *
+from .models import User, Story
 from .authentication import create_access_token, create_refresh_token, decode_access_token, decode_refresh_token
 from django.shortcuts import get_object_or_404
+from .functions import *
+import json
+
 
 # Create your views here.
 
@@ -69,6 +72,28 @@ class UserAPIView(APIView):
         raise AuthenticationFailed('unauthenticated')
     
 
+class FollowerAPIView(APIView):
+    def post(self, request, user_id):
+        user_to_follow = get_object_or_404(User, id=user_id)
+        user = authorization_checker(request)
+        if user == user_to_follow:
+            return Response({'error': 'You cannot follow yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+        if user_to_follow.followers.filter(id=user).exists():
+            user_to_follow.followers.remove(user)
+            return Response({'message': 'User unfollowed successfully.'}, status=status.HTTP_200_OK)
+        else:
+            user_to_follow.followers.add(user)
+            return Response({'message': 'User followed successfully.'}, status=status.HTTP_200_OK)
+        
+class FollowerListView(APIView):
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        followers = user.followers.all()
+        serializer = UserSerializer(followers, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    
+
 class RefreshAPIView(APIView):
     def post(self, request):
         refresh_token = request.COOKIES.get('refreshToken')
@@ -105,11 +130,12 @@ class StoryLikeAPIView(APIView):
     def post(self, request, pk):
         story = get_object_or_404(Story, pk=pk)
         auth = get_authorization_header(request).split() #first part will be bearer second part will be actual token
+        print(auth)
         if auth and len(auth)==2:
             token = auth[1].decode('utf-8')
             id = decode_refresh_token(token)
             user= User.objects.filter(pk=id).first()
-        
+            print(user)
             if user:
                 if user in story.likes.all():
                     story.likes.remove(user)
@@ -128,3 +154,28 @@ class AuthorStoriesAPIView(APIView):
 
         serializer = StorySerializer(stories, many=True)
         return Response(serializer.data)
+    
+class CommentAPIView(APIView):
+    def post(self, request, story_id):
+
+        user= authorization_checker(request)
+        request_data = json.loads(request.body)
+        request_data['author'] = user
+        request_data['story'] = story_id
+        serializer = CommentSerializer(data=request_data)
+        
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+    
+    
+class StoryCommentListAPIView(generics.ListAPIView):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        story_id = self.kwargs['story_id']
+        queryset = Comment.objects.filter(story_id=story_id)
+        return queryset
+        
