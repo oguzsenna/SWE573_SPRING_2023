@@ -27,6 +27,11 @@ class Story(models.Model):
     def __str__(self):
         return self.title
 
+class Comment(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    story = models.ForeignKey(Story, on_delete=models.CASCADE, related_name='comments')
+    content = models.TextField(null=True)
+    date = models.DateTimeField(auto_now_add=True)
 
 
 
