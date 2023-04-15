@@ -98,27 +98,3 @@ class LogoutAPIView(APIView):
         return response
 
     
-class LikeCreateAPIView(APIView):
-    def post(self, request, story_id):
-        user = request.user
-        story = Story.objects.get(pk=story_id)
-        like = Like.objects.filter(user=user, story=story).first()
-        if like is not None:
-            serializer = LikeSerializer(like)
-            return Response(serializer.data)
-        else:
-            like = Like(user=user, story=story)
-            like.save()
-            serializer = LikeSerializer(like)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-class LikeDestroyAPIView(APIView):
-    def delete(self, request, story_id):
-        user = request.user
-        story = Story.objects.get(pk=story_id)
-        like = Like.objects.filter(user=user, story=story).first()
-        if like is not None:
-            like.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
