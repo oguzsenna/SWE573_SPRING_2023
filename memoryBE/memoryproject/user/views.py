@@ -1,6 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status, permissions
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import APIException, AuthenticationFailed
 from rest_framework.authentication import get_authorization_header
 from .serializers import UserSerializer, StorySerializer, LikeSerializer
@@ -47,15 +49,35 @@ class UserAPIView(APIView):
         print(auth)
         if auth and len(auth)==2:
             token = auth[1].decode('utf-8')
-            id = decode_access_token(token)
+            print(token)
+            id = decode_refresh_token(token)
             print(id)
             user= User.objects.filter(pk=id).first()
 
-
             return Response(UserSerializer(user).data)
         raise AuthenticationFailed('unauthenticated')
+    
+class StoryCreateAPIView(APIView):
+  
+    def post(self, request):
+        auth = get_authorization_header(request).split() #first part will be bearer second part will be actual token
+        print(auth)
+        if auth and len(auth)==2:
+            token = auth[1].decode('utf-8')
+            id = decode_refresh_token(token)
+            user= User.objects.filter(pk=id).first()
+            print(user)
+            print(user.id)
+            if user:
+                data=request.data
+                data['author'] = user.id
 
-
+                serializer = StorySerializer(data=data, context={'request':request})
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        raise AuthenticationFailed('unauthenticated')
 
 class RefreshAPIView(APIView):
     def post(self, request):
@@ -74,15 +96,7 @@ class LogoutAPIView(APIView):
             'message': 'successful logout'
         }
         return response
-class StoryCreateAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request):
-        serializer = StorySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(author=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class LikeCreateAPIView(APIView):
     def post(self, request, story_id):

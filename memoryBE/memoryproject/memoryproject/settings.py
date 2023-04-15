@@ -112,7 +112,11 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'user.exceptions.status_code_handler'
+    'EXCEPTION_HANDLER': 'user.exceptions.status_code_handler',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        # ... other authentication classes ...
+    ],
 }
 
 

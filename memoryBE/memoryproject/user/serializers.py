@@ -6,7 +6,7 @@ from .models import User, Story, Like
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ('id','username', 'email', 'password','repassword')
+        fields = ('id','username', 'email', 'password')
         extra_kwargs = {
             "password": {"write_only": True},
             "re-password": {"write_only": True}
@@ -30,10 +30,10 @@ class UserSerializer(ModelSerializer):
 class StorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Story
-        fields = ['title', 'main_story', 'story_tags', 'location', 'date']
+        fields = ['author', 'title', 'content', 'story_tags', 'location', 'date']
 
     def create(self, validated_data):
-        story = Story.objects.create(author=self.context['request'].user, **validated_data)
+        story = Story.objects.create(**validated_data)
         return story
     
 class LikeSerializer(serializers.ModelSerializer):
