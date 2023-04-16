@@ -142,21 +142,30 @@ class RefreshAPIView(APIView):
 class StoryCreateAPIView(APIView):
   
     def post(self, request):
-        auth = get_authorization_header(request).split() #first part will be bearer second part will be actual token
-        if auth and len(auth)==2:
-            token = auth[1].decode('utf-8')
-            id = decode_refresh_token(token)
-            user= User.objects.filter(pk=id).first()
+        # auth = get_authorization_header(request).split() #first part will be bearer second part will be actual token
+        # if auth and len(auth)==2:
+        #     token = auth[1].decode('utf-8')
+        #     id = decode_refresh_token(token)
+        #     user= User.objects.filter(pk=id).first()
         
-            if user:
-                data=request.data
-                data['author'] = user.id
-                serializer = StorySerializer(data=data, context={'request':request})
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        raise AuthenticationFailed('unauthenticated')
+        #     if user:
+        #         data=request.data
+        #         data['author'] = user.id
+        #         serializer = StorySerializer(data=data, context={'request':request})
+        print(request.COOKIES)
+        cookie_value = request.COOKIES['refreshToken']
+        request_data = json.loads(request.body)
+        user_id = decode_refresh_token(cookie_value)
+
+        request_data['author'] = user_id
+
+        serializer = StorySerializer(data=request_data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 
 class StoryLikeAPIView(APIView):

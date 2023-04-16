@@ -39,7 +39,7 @@ function Register() {
 
   return (
     <div>
-        <h1>Register Page</h1>
+        <h1 className='big-heading'>Register Page</h1>
 
         <form onSubmit={handleSubmit}>
         <label>

@@ -15,21 +15,22 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     const response = await fetch('http://localhost:8000/api/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
+      credentials: 'include' 
     });
-
+  
     const data = await response.json();
-
+  
     if (response.ok) {
       localStorage.setItem('token', data.token);
       toast.success('Login successful!');
-      window.location.href = '/dashboard';
+      window.location.href = '/create_story';
     } else {
       toast.error('Invalid email or password');
     }
@@ -37,7 +38,7 @@ function Login() {
 
   return (
     <div>
-        <h1>Login Page</h1>
+        <h1 className='big-heading'>Login Page</h1>
 
         <form onSubmit={handleLogin}>
         <label>
