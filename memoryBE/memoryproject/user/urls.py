@@ -15,6 +15,10 @@ urlpatterns = [
     path('user/<int:user_id>/followers/', FollowerListView.as_view()),
     path('stories/comment/<int:story_id>', CommentAPIView.as_view(), name='comment-list'),
     path('stories/<int:story_id>/allcomments/', StoryCommentListAPIView.as_view(), name='story-comment-list'),
+    path('user/bio/create', UserBiographyCreateAPIView.as_view(), name='user-biography-create'),
+    path('user/bio/update', UserBiographyUpdateAPIView.as_view(), name='user-biography-update'),
+]
+
 
 
 
@@ -22,4 +26,3 @@ urlpatterns = [
 
 
     
-]
