@@ -11,14 +11,17 @@ from .authentication import create_access_token, create_refresh_token, decode_ac
 from django.shortcuts import get_object_or_404
 from .functions import *
 import json
+from django.shortcuts import render
+
 
 
 # Create your views here.
 
+
 class RegisterAPIView(APIView):
     def post(self,request):
         serializer = UserSerializer(data=request.data)
-        print(serializer)
+        
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)

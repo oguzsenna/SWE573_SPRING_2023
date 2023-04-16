@@ -1,7 +1,11 @@
 
 from django.urls import path
-
+from . import views
 from .views import *
+from django.views.generic import TemplateView
+
+
+
 urlpatterns = [
     path("register", RegisterAPIView.as_view()),
     path("login", LoginAPIView.as_view()),
@@ -17,6 +21,8 @@ urlpatterns = [
     path('stories/<int:story_id>/allcomments/', StoryCommentListAPIView.as_view(), name='story-comment-list'),
     path('user/bio/create', UserBiographyCreateAPIView.as_view(), name='user-biography-create'),
     path('user/bio/update', UserBiographyUpdateAPIView.as_view(), name='user-biography-update'),
+    path('register/', views.RegisterAPIView.as_view()),
+
 ]
 
 
