@@ -13,6 +13,13 @@ class User(AbstractUser):
     biography = models.TextField(blank=True)
     followers = models.ManyToManyField('self', related_name='following', symmetrical=False, blank=True)
     
+class Location(models.Model):
+    name = models.CharField(max_length=255)
+    latitude = models.DecimalField(max_digits=19, decimal_places=10)
+    longitude = models.DecimalField(max_digits=19, decimal_places=10)
+
+    def __str__(self):
+        return self.name  
 
 class Story(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -22,10 +29,14 @@ class Story(models.Model):
     location = models.CharField(max_length=255, null=True)
     date = models.DateField(null= True)
     likes = models.ManyToManyField(User, related_name='liked_stories', blank=True)
+    locations = models.ManyToManyField(Location, blank=True)
+
 
 
     def __str__(self):
         return self.title
+    
+
 
 class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)

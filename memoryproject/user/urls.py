@@ -21,7 +21,7 @@ urlpatterns = [
     path('stories/<int:story_id>/allcomments/', StoryCommentListAPIView.as_view(), name='story-comment-list'),
     path('user/bio/create', UserBiographyCreateAPIView.as_view(), name='user-biography-create'),
     path('user/bio/update', UserBiographyUpdateAPIView.as_view(), name='user-biography-update'),
- 
+    path('register/', views.RegisterAPIView.as_view()),
 
 ]
 
