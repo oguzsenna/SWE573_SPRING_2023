@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { GoogleMap, LoadScript, Autocomplete, Marker } from '@react-google-maps/api';
+import { Loader } from "@googlemaps/js-api-loader";
+
 
 function CreateStory() {
   const [title, setTitle] = useState('');
@@ -7,6 +10,9 @@ function CreateStory() {
   const [storyTags, setStoryTags] = useState('');
   const [location, setLocation] = useState('');
   const [date, setDate] = useState('');
+  const [locations, setLocations] = useState([]);
+  const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
+  const [searchBox, setSearchBox] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

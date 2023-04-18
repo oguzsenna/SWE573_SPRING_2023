@@ -26,7 +26,6 @@ class Story(models.Model):
     title = models.CharField(max_length=255, null=True)
     content = models.TextField(null=True)
     story_tags = ArrayField(models.CharField(max_length=255, null=True), default=list)
-    location = models.CharField(max_length=255, null=True)
     date = models.DateField(null= True)
     likes = models.ManyToManyField(User, related_name='liked_stories', blank=True)
     locations = models.ManyToManyField(Location, blank=True)
