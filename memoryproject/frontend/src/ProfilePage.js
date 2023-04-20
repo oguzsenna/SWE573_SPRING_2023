@@ -17,7 +17,6 @@ function ProfilePage() {
       {stories.map(story => (
         <div key={story.id}>
           <h2>{story.title}</h2>
-          <p>{story.content}</p>
           {/* display other fields as needed */}
         </div>
       ))}
