@@ -16,27 +16,22 @@ function App() {
             <Link to="/register" className="nav-item nav-link button">Register</Link>
             <Link to="/login" className="nav-item nav-link button">Login</Link>
             <Link to="/create_story" className="nav-item nav-link button">Create Story</Link>
+            <Link to="/follower_stories/25/" className="nav-item nav-link button">Home Page</Link> {/* Replace 123 with the to_user_id you want to fetch stories for */}
             <Link to="/logout" className="nav-item nav-link button">Logout</Link>
-
-
-
           </div>
         </nav>
 
         <Routes>
           <Route path="/" element={
               <div className="memories-container">
-
-              <img src="https://static.vecteezy.com/system/resources/previews/004/264/987/original/the-best-memories-modern-calligraphy-inscription-wall-art-decor-design-wedding-photo-album-vector.jpg" alt="Memories" style={{ width: '1000px', height: 'auto'}} />
-            </div>
+                <img src="https://static.vecteezy.com/system/resources/previews/004/264/987/original/the-best-memories-modern-calligraphy-inscription-wall-art-decor-design-wedding-photo-album-vector.jpg" alt="Memories" style={{ width: '1000px', height: 'auto'}} />
+              </div>
           } />          
 
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/create_story" element={<CreateStory  />} />
-          <Route path="/logout" element={<Logout  />} />
-          
-          
+          <Route path="/create_story" element={<CreateStory />} />
+          <Route path="/logout" element={<Logout />} />
         </Routes>
       </div>
     </Router>

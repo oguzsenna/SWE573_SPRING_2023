@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import ArrayField
 from django.db.models import Value
+from datetime import datetime
+from django.utils import timezone
+
+
 
 
 
@@ -30,11 +34,19 @@ class Story(models.Model):
     date = models.DateField(null= True)
     likes = models.ManyToManyField(User, related_name='liked_stories', blank=True)
     locations = models.ManyToManyField(Location, blank=True)
+    season = models.CharField(max_length=255, null=True, blank=True)
+    start_year = models.PositiveIntegerField(null=True, blank=True)
+    end_year = models.PositiveIntegerField(null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
 
 
     def __str__(self):
         return self.title
+    
+    
     
 
 

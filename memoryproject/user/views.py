@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status, permissions, generics
+from rest_framework import status, permissions, generics, authentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import APIException, AuthenticationFailed
@@ -12,11 +12,54 @@ from django.shortcuts import get_object_or_404
 from .functions import *
 import json
 from django.shortcuts import render
+from rest_framework.pagination import PageNumberPagination
+
 
 
 
 # Create your views here.
 
+class FollowerStoryView(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, to_user_id):
+        # Get the current user based on the authentication token
+        current_user = request.user
+
+        # Get the from_user_id from the refresh token (assuming you have implemented this)
+        from_user_id = request.auth.user_id
+
+        # Get the followers of the to_user_id
+        followers = User.objects.filter(following__to_user_id=to_user_id)
+
+        # Get the stories of the followers
+        follower_stories = Story.objects.filter(author_id__in=followers)
+
+        # Filter the stories based on query parameters (if any)
+        story_tags = request.query_params.getlist('story_tags', [])
+        if story_tags:
+            follower_stories = follower_stories.filter(story_tags__name__in=story_tags)
+
+        # Paginate the stories
+        paginator = PageNumberPagination()
+        paginated_stories = paginator.paginate_queryset(follower_stories, request)
+
+        # Serialize the stories and return as response
+        serialized_stories = StorySerializer(paginated_stories, many=True).data
+        return paginator.get_paginated_response(serialized_stories)
+
+
+
+class GetStoryByAuthorIDView(APIView):
+    def get(self, request, author_id):
+        # Get the stories by the given author id
+        stories = Story.objects.filter(author_id=author_id)
+
+        # Serialize the stories and return as response
+        serialized_stories = StorySerializer(stories, many=True).data
+        return Response(serialized_stories)
+    
 
 class RegisterAPIView(APIView):
     def post(self,request):
@@ -112,12 +155,17 @@ class FollowerAPIView(APIView):
         user = authorization_checker(request)
         if user == user_to_follow:
             return Response({'error': 'You cannot follow yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+        if user == user_to_follow:
+            return Response({'error': 'You cannot follow yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+
         if user_to_follow.followers.filter(id=user).exists():
             user_to_follow.followers.remove(user)
             return Response({'message': 'User unfollowed successfully.'}, status=status.HTTP_200_OK)
         else:
             user_to_follow.followers.add(user)
             return Response({'message': 'User followed successfully.'}, status=status.HTTP_200_OK)
+        
+
         
 class FollowerListView(APIView):
     def get(self, request, user_id):
@@ -149,6 +197,33 @@ class StoryCreateAPIView(APIView):
         print(request_data)
         request_data['author'] = user_id
         locations_data = request_data.pop('locations', [])
+        # Extract decade data
+        decade = request_data.pop('decade', None)
+
+        # Add decade data to request_data
+        if decade:
+            request_data['start_year'] = decade['start_year']
+            request_data['end_year'] = decade['end_year']
+
+        # Extract date interval data
+        date_interval = request_data.pop('date_interval', None)
+
+        # Add date interval data to request_data
+        if date_interval:
+            request_data['start_date'] = date_interval['start_date']
+            request_data['end_date'] = date_interval['end_date']
+            
+        # Extract date filter data
+        date_filter = request_data.pop('dateFilter', None)
+        season = request_data.pop('season', None)
+
+        # Add season data to request_data
+        if season:
+            request_data['season'] = season
+
+        # Process date filter data
+        if date_filter == 'particular':
+            request_data['date'] = date_filter['date']
 
         serializer = StorySerializer(data=request_data)
 

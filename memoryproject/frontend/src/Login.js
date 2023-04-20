@@ -30,7 +30,7 @@ function Login() {
     if (response.ok) {
       localStorage.setItem('token', data.token);
       toast.success('Login successful!');
-      window.location.href = '/create_story';
+      window.location.href = '/follower_stories';
     } else {
       toast.error('Invalid email or password');
     }

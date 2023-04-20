@@ -17,8 +17,19 @@ function CreateStory() {
   const autocompleteRef = useRef(null);
   const [selectedSeason, setSelectedSeason] = useState(null);
   const [date, setDate] = useState(null); // Add a new state for date
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [start_year, setStartYear] = useState(null);
+  const [end_year, setEndYear] = useState(null);
+  const [start_date, setStartDate] = useState(null);
+  const [end_date, setEndDate] = useState(null);
+
+  useEffect(()=>{
+    setSelectedSeason(null);
+    setDate(null);
+    setStartDate(null);
+    setEndDate(null);
+    setStartYear(null);
+    setEndYear(null);
+}, [dateFilter])
 
   const handleDateFilterChange = (event) => {
     setDateFilter(event.target.value);
@@ -30,35 +41,51 @@ function CreateStory() {
     console.log(event.target.value);
   };
  
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    try {
-      const response =  await axios.post('http://localhost:8000/api/create_story', {
-        title,
-        content,
-        story_tags: storyTags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0),
-        locations,
-        date, // Include the date field
-      }, {
-        withCredentials: true,
-      });
-      setTitle('');
-      setContent('');
-      setStoryTags('');
-      setLocations([]);
-      setDateFilter(null);
-    } catch (error) {
-      console.error(error);
-    }
+  
+    const submitStory = async () => {
+      try {
+        console.log("Submitting the form");
+        const response = await axios.post("http://localhost:8000/api/create_story",
+          {
+            
+            title,
+            content,
+            story_tags: storyTags
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter((tag) => tag.length > 0),
+            locations,
+            date,
+            season: selectedSeason,
+            start_year: start_year ? parseInt(start_year) : null,
+            end_year: end_year ? parseInt(end_year) : null,
+            start_date: start_date,
+            end_date: end_date,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+        console.log("Form submitted, response:", response);
+  
+        setTitle('');
+        setContent('');
+        setStoryTags('');
+        setLocations([]);
+        setDateFilter(null);
+      } catch (error) {
+        console.error("Error submitting the form:", error);
+      
+      }
+    };
+  
+    submitStory();
   };
+  
 
-//  useEffect(()=>{
-//    setSelectedSeason(null);
-//    setDate(null);
- //   setStartDate(null);
-  //  setEndDate(null);
-    //setParticularDate(null);
-  //}, [dateFilter])
+
   
 
   const handleLocationSelect = () => {
@@ -146,23 +173,36 @@ function CreateStory() {
         </div>
       );
       case 'decade':
-        return (
-          <div>
-            <input type="text" placeholder="Start year" />
-            {' - '}
-            <input type="text" placeholder="End year" />
-            <button type="button" onClick={handleClearFilter}>Clear filter</button>
-          </div>
-        );
+  return (
+    <>
+      <input
+        type="text"
+        placeholder="Start year"
+        value={start_year}
+        onChange={(event) => setStartYear(event.target.value)}
+      />
+      {" - "}
+      <input
+        type="text"
+        placeholder="End year"
+        value={end_year}
+        onChange={(event) => setEndYear(event.target.value)}
+      />
+      <button type="button" onClick={handleClearFilter}>Clear filter</button>
+    </>
+  );
+
+
       case 'interval':
           return (
             <div>
-              <input type= "date" className="form-control" onChange={(date) => setStartDate(date)} />
+              <input type= "date" className="form-control" onChange={(date) => setStartDate(date.target.value)} />
               {' - '}
-              <input type= "date" className="form-control" onChange={(date) => setEndDate(date)} />
+              <input type= "date" className="form-control" onChange={(date) => setEndDate(date.target.value)} />
               <button type="button" onClick={handleClearFilter}>Clear filter</button>
             </div>
           );
+
         case 'particular':
           return (
             <form>

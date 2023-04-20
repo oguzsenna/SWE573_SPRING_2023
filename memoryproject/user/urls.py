@@ -22,6 +22,8 @@ urlpatterns = [
     path('user/bio/create', UserBiographyCreateAPIView.as_view(), name='user-biography-create'),
     path('user/bio/update', UserBiographyUpdateAPIView.as_view(), name='user-biography-update'),
     path('register/', views.RegisterAPIView.as_view()),
+    path('follower-stories/<int:to_user_id>/', FollowerStoryView.as_view(), name='follower_stories'),
+
 
 ]
 
