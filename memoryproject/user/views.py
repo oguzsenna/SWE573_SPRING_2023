@@ -72,6 +72,21 @@ class GetStoryByAuthorIDView(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class GetStoryByUserIDView(APIView):
+    def get(self, request):
+        cookie_value = request.COOKIES['refreshToken']
+        if not cookie_value:
+            return Response({'error': 'Refresh token not found.'}, status=status.HTTP_401_UNAUTHORIZED)
+        user_id = decode_refresh_token(cookie_value)
+        if not user_id:
+            return Response({'error': 'Invalid token.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            stories = Story.objects.filter(author_id=user_id).order_by('-created_at')
+            serializer = StorySerializer(stories, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Story.DoesNotExist:
+            return Response({'error': 'User has no stories.'}, status=status.HTTP_404_NOT_FOUND)
     
 
 class RegisterAPIView(APIView):
@@ -248,16 +263,6 @@ class StoryCreateAPIView(APIView):
         # Print serializer errors for debugging purposes
         print("Serializer errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
-
-
-
-
-    
 
 
 class StoryLikeAPIView(APIView):

@@ -24,6 +24,8 @@ urlpatterns = [
     path('register/', views.RegisterAPIView.as_view()),
     path('follower-stories/<int:to_user_id>', FollowerStoryView.as_view(), name='follower_stories'),
     path('stories/author', GetStoryByAuthorIDView.as_view()),
+    path('stories/user', GetStoryByUserIDView.as_view(), name='get-story-by-user-id'),
+
    
 ]
 
