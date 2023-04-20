@@ -12,14 +12,15 @@ class User(AbstractUser):
     repassword = models.CharField(max_length=255)
     biography = models.TextField(blank=True)
     followers = models.ManyToManyField('self', related_name='following', symmetrical=False, blank=True)
+
     
 class Location(models.Model):
     name = models.CharField(max_length=255)
-    latitude = models.DecimalField(max_digits=19, decimal_places=10)
-    longitude = models.DecimalField(max_digits=19, decimal_places=10)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
 
-    def __str__(self):
-        return self.name  
+    class Meta:
+        unique_together = ('latitude', 'longitude')
 
 class Story(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)

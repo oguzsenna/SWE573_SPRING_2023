@@ -90,11 +90,11 @@ class UserBiographyCreateAPIView(generics.CreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({'error': 'Biography not provided'}, status=status.HTTP_400_BAD_REQUEST)
 
-class UserBiographyUpdateAPIView(generics.UpdateAPIView):
+class UserBiographyUpdateAPIView(generics.UpdateAPIView): # üstteki ile birleştir.
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def patch(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
 
         user_id = authorization_checker(request)  
         user = get_object_or_404(User, id=user_id)  
@@ -140,31 +140,49 @@ class RefreshAPIView(APIView):
 
 
 class StoryCreateAPIView(APIView):
-  
+
     def post(self, request):
-        # auth = get_authorization_header(request).split() #first part will be bearer second part will be actual token
-        # if auth and len(auth)==2:
-        #     token = auth[1].decode('utf-8')
-        #     id = decode_refresh_token(token)
-        #     user= User.objects.filter(pk=id).first()
-        
-        #     if user:
-        #         data=request.data
-        #         data['author'] = user.id
-        #         serializer = StorySerializer(data=data, context={'request':request})
         print(request.COOKIES)
         cookie_value = request.COOKIES['refreshToken']
         request_data = json.loads(request.body)
         user_id = decode_refresh_token(cookie_value)
-
+        print(request_data)
         request_data['author'] = user_id
+        locations_data = request_data.pop('locations', [])
 
         serializer = StorySerializer(data=request_data)
 
         if serializer.is_valid():
-            serializer.save()
+            story = serializer.save()
+
+            # Create the Location instances if they don't already exist
+            locations = []
+            for location_data in locations_data:
+                location, created = Location.objects.get_or_create(
+                    name=location_data['name'],
+                    latitude=location_data['latitude'],
+                    longitude=location_data['longitude']
+                )
+                locations.append(location)
+
+            # Associate the locations with the story
+            story.locations.set(locations)
+            story.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        # Print serializer errors for debugging purposes
+        print("Serializer errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
+
+
     
 
 

@@ -4,6 +4,7 @@ import Register from './Register';
 import Login from './Login';
 import './App.css';
 import CreateStory from './CreateStory'
+import Logout from './Logout';
 
 function App() {
   return (
@@ -11,10 +12,12 @@ function App() {
       <div className="container">
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
           <div className="navbar-nav">
-            <Link to="/" className="nav-item nav-link">Home</Link>
-            <Link to="/register" className="nav-item nav-link">Register</Link>
-            <Link to="/login" className="nav-item nav-link">Login</Link>
-            <Link to="/create_story" className="nav-item nav-link">Create Story</Link>
+            <Link to="/" className="nav-item nav-link button">Home</Link>
+            <Link to="/register" className="nav-item nav-link button">Register</Link>
+            <Link to="/login" className="nav-item nav-link button">Login</Link>
+            <Link to="/create_story" className="nav-item nav-link button">Create Story</Link>
+            <Link to="/logout" className="nav-item nav-link button">Logout</Link>
+
 
 
           </div>
@@ -31,6 +34,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/create_story" element={<CreateStory  />} />
+          <Route path="/logout" element={<Logout  />} />
           
           
         </Routes>

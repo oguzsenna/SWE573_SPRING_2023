@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from .models import *
+from datetime import datetime
 
 
 class UserSerializer(ModelSerializer):
@@ -28,13 +29,20 @@ class UserSerializer(ModelSerializer):
 
 
 class StorySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Story
-        fields = ['author', 'title', 'content', 'story_tags', 'location', 'date']
+        fields = ['author', 'title', 'content', 'story_tags', 'locations', 'date']
 
     def create(self, validated_data):
         story = Story.objects.create(**validated_data)
         return story
+
+    
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = ['name', 'latitude', 'longitude']
     
 class CommentSerializer(serializers.ModelSerializer):
     

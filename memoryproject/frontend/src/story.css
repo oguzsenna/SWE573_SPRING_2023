@@ -1,0 +1,12 @@
+.create-story-container {
+    display: flex;
+  }
+  
+  .create-story-form {
+    flex: 1;
+    margin-right: 20px;
+  }
+  
+  .create-story-map {
+    flex: 1;
+  }
