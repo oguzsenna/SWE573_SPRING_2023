@@ -52,13 +52,26 @@ class FollowerStoryView(APIView):
 
 
 class GetStoryByAuthorIDView(APIView):
-    def get(self, request, author_id):
-        # Get the stories by the given author id
-        stories = Story.objects.filter(author_id=author_id)
+    def get(self, request):
+        cookie_value = request.COOKIES['refreshToken']
+        user_id = decode_refresh_token(cookie_value)
+        #user_id = auth_check(request)
+        print(user_id)
 
-        # Serialize the stories and return as response
-        serialized_stories = StorySerializer(stories, many=True).data
-        return Response(serialized_stories)
+        try:
+            user = User.objects.get(id=user_id) 
+        except User.DoesNotExist:
+            return Response({'error': 'User does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+
+        followed_users_ids = user.following.values_list('id', flat=True)
+        #print(followed_users)
+        #followed_users_ids = followed_users.values_list('id', flat=True)
+
+        stories = Story.objects.filter(author_id__in=followed_users_ids).order_by('-created_at')
+        serializer = StorySerializer(stories, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     
 
 class RegisterAPIView(APIView):
@@ -196,7 +209,7 @@ class StoryCreateAPIView(APIView):
         user_id = decode_refresh_token(cookie_value)
         print(request_data)
         request_data['author'] = user_id
-        locations_data = request_data.pop('locations', [])
+        
         # Extract decade data
         decade = request_data.pop('decade', None)
 
@@ -225,25 +238,11 @@ class StoryCreateAPIView(APIView):
         if date_filter == 'particular':
             request_data['date'] = date_filter['date']
 
+
         serializer = StorySerializer(data=request_data)
-
+        print(request_data)
         if serializer.is_valid():
-            story = serializer.save()
-
-            # Create the Location instances if they don't already exist
-            locations = []
-            for location_data in locations_data:
-                location, created = Location.objects.get_or_create(
-                    name=location_data['name'],
-                    latitude=location_data['latitude'],
-                    longitude=location_data['longitude']
-                )
-                locations.append(location)
-
-            # Associate the locations with the story
-            story.locations.set(locations)
-            story.save()
-
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         # Print serializer errors for debugging purposes

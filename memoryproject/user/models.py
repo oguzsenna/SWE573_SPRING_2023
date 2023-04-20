@@ -23,8 +23,8 @@ class Location(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
 
-    class Meta:
-        unique_together = ('latitude', 'longitude')
+    #class Meta:
+     #   unique_together = ('latitude', 'longitude')
 
 class Story(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -45,8 +45,6 @@ class Story(models.Model):
 
     def __str__(self):
         return self.title
-    
-    
     
 
 

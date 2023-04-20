@@ -27,22 +27,32 @@ class UserSerializer(ModelSerializer):
         instance.save()
         return instance
 
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = ['name', 'latitude', 'longitude']
+
+
+class LocationDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = '__all__'  
 
 class StorySerializer(serializers.ModelSerializer):
+    locations = LocationDetailsSerializer(many=True)  # set read_only=True option
 
     class Meta:
         model = Story
         fields = ['author', 'title', 'content', 'story_tags', 'locations', 'date', 'season', 'start_year', 'end_year', 'start_date', 'end_date']
 
     def create(self, validated_data):
+        locations_data = validated_data.pop('locations')
+        print(locations_data)
         story = Story.objects.create(**validated_data)
+        for location_data in locations_data:
+            location = Location.objects.create(**location_data)
+            story.locations.add(location)
         return story
-
-    
-class LocationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Location
-        fields = ['name', 'latitude', 'longitude']
     
 class CommentSerializer(serializers.ModelSerializer):
     

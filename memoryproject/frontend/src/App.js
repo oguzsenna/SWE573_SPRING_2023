@@ -5,6 +5,7 @@ import Login from './Login';
 import './App.css';
 import CreateStory from './CreateStory'
 import Logout from './Logout';
+import HomePage from './HomePage';
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
             <Link to="/register" className="nav-item nav-link button">Register</Link>
             <Link to="/login" className="nav-item nav-link button">Login</Link>
             <Link to="/create_story" className="nav-item nav-link button">Create Story</Link>
-            <Link to="/follower_stories/25/" className="nav-item nav-link button">Home Page</Link> {/* Replace 123 with the to_user_id you want to fetch stories for */}
+            <Link to="/homepage" className="nav-item nav-link button">Home Page</Link> 
             <Link to="/logout" className="nav-item nav-link button">Logout</Link>
           </div>
         </nav>
@@ -32,6 +33,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/create_story" element={<CreateStory />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/homepage" element={<HomePage />} />
         </Routes>
       </div>
     </Router>
