@@ -146,18 +146,18 @@ class LogoutAPIView(APIView):
 
 
 class UserAPIView(APIView):
-    def get(self,request):
-        auth = get_authorization_header(request).split() #first part will be bearer second part will be actual token
-        print(auth)
-        if auth and len(auth)==2:
-            token = auth[1].decode('utf-8')
-            print(token)
-            id = decode_refresh_token(token)
-            print(id)
-            user= User.objects.filter(pk=id).first()
+    def get(self, request, user_id=None):
 
-            return Response(UserSerializer(user).data)
-        raise AuthenticationFailed('unauthenticated')
+        #user_id = auth_check(request)
+        if user_id:
+            user = get_object_or_404(User, pk=user_id)
+        else:
+            cookie_value = request.COOKIES['refreshToken']
+            user_id = decode_refresh_token(cookie_value)
+            user = get_object_or_404(User, pk=user_id)
+
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
     
 
 class UserBiographyAPIView(APIView):
