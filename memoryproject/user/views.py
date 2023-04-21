@@ -75,6 +75,14 @@ class GetStoryByAuthorIDView(APIView):
 
 class GetStoryByUserIDView(APIView):
     def get(self, request):
+        page = request.query_params.get('page', 1)
+        per_page = request.query_params.get('perPage', 5)
+        try:
+            page = int(page)
+            per_page = int(per_page)
+        except ValueError:
+            return Response({'error': 'Invalid page or perPage value'}, status=status.HTTP_400_BAD_REQUEST)
+
         cookie_value = request.COOKIES['refreshToken']
         if not cookie_value:
             return Response({'error': 'Refresh token not found.'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -84,8 +92,12 @@ class GetStoryByUserIDView(APIView):
 
         try:
             stories = Story.objects.filter(author_id=user_id).order_by('-created_at')
-            serializer = StorySerializer(stories, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            paginator = Paginator(stories, per_page)
+            total_pages = paginator.num_pages
+            stories_page = paginator.page(page)
+            serializer = StorySerializer(stories_page, many=True)
+
+            return Response({'stories': serializer.data, 'totalPages': total_pages}, status=status.HTTP_200_OK)
         except Story.DoesNotExist:
             return Response({'error': 'User has no stories.'}, status=status.HTTP_404_NOT_FOUND)
     
