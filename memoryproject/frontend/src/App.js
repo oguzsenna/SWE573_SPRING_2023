@@ -34,7 +34,6 @@ function App() {
               <>
                 <Link to="/homepage" className="nav-item nav-link button">Home Page</Link>
                 <Link to="/profile_page" className="nav-item nav-link button">Profile Page</Link> 
- 
                 <Link to="/create_story" className="nav-item nav-link button">Create Story</Link>
                 <Link to="/logout" className="nav-item nav-link button">Logout</Link>
               </>

@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { GoogleMap, LoadScript, Autocomplete, Marker } from '@react-google-maps/api';
+
+
+//css files
 import 'react-datepicker/dist/react-datepicker.css';
 import './story.css';
 
@@ -84,10 +87,6 @@ function CreateStory() {
     submitStory();
   };
   
-
-
-  
-
   const handleLocationSelect = () => {
     const place = autocompleteRef.current.getPlace();
     const locationData = {

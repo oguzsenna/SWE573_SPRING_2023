@@ -12,7 +12,8 @@ from django.shortcuts import get_object_or_404
 from .functions import *
 import json
 from django.shortcuts import render
-from rest_framework.pagination import PageNumberPagination
+from django.core.paginator import Paginator
+
 
 
 
@@ -41,36 +42,36 @@ class FollowerStoryView(APIView):
         if story_tags:
             follower_stories = follower_stories.filter(story_tags__name__in=story_tags)
 
-        # Paginate the stories
-        paginator = PageNumberPagination()
-        paginated_stories = paginator.paginate_queryset(follower_stories, request)
-
-        # Serialize the stories and return as response
-        serialized_stories = StorySerializer(paginated_stories, many=True).data
-        return paginator.get_paginated_response(serialized_stories)
-
-
 
 class GetStoryByAuthorIDView(APIView):
     def get(self, request):
+        page = request.query_params.get('page', 1)
+        per_page = request.query_params.get('perPage', 5)
+        try:
+            page = int(page)
+            per_page = int(per_page)
+        except ValueError:
+            return Response({'error': 'Invalid page or perPage value'}, status=status.HTTP_400_BAD_REQUEST)
+
         cookie_value = request.COOKIES['refreshToken']
         user_id = decode_refresh_token(cookie_value)
-        #user_id = auth_check(request)
-        print(user_id)
 
         try:
-            user = User.objects.get(id=user_id) 
+            user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return Response({'error': 'User does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
-        followed_users_ids = user.following.values_list('id', flat=True)
-        #print(followed_users)
-        #followed_users_ids = followed_users.values_list('id', flat=True)
+        followed_users_ids = user.following.values_list('id', flat=True) # type: ignore
 
         stories = Story.objects.filter(author_id__in=followed_users_ids).order_by('-created_at')
-        serializer = StorySerializer(stories, many=True)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = Paginator(stories, per_page)
+        total_pages = paginator.num_pages
+        stories_page = paginator.page(page)
+        serializer = StorySerializer(stories_page, many=True)
+
+        return Response({'stories': serializer.data, 'totalPages': total_pages}, status=status.HTTP_200_OK)
+
 
 class GetStoryByUserIDView(APIView):
     def get(self, request):
@@ -107,9 +108,9 @@ class LoginAPIView(APIView):
 
         if not user.check_password(request.data['password']):
             raise APIException('Invalid credentials!')
-        print(user.id)
-        access_token = create_access_token(user.id) #will be returned in response
-        refresh_token = create_refresh_token(user.id) #will be returned as a cookie
+        print(user.id) # type: ignore
+        access_token = create_access_token(user.id) # type: ignore #will be returned in response
+        refresh_token = create_refresh_token(user.id) # type: ignore #will be returned as a cookie
 
         response = Response()
 
@@ -122,11 +123,12 @@ class LoginAPIView(APIView):
     
 
 class LogoutAPIView(APIView):
-    def post(self, _):
+    def post(self, request):
+
         response = Response()
-        response.delete_cookie(key='refreshToken')
-        response.data= {
-            'message': 'successful logout'
+        response.delete_cookie('refreshToken')
+        response.data = {
+            'message': 'success'
         }
         return response
 
@@ -145,37 +147,32 @@ class UserAPIView(APIView):
             return Response(UserSerializer(user).data)
         raise AuthenticationFailed('unauthenticated')
     
-class UserBiographyCreateAPIView(generics.CreateAPIView):
-    queryset = User.objects.all()
+
+class UserBiographyAPIView(APIView):
     serializer_class = UserSerializer
 
     def post(self, request, *args, **kwargs):
-        user_id = authorization_checker(request)  
-        user = get_object_or_404(User, id=user_id)  
+        user_id = authorization_checker(request)
+        user = get_object_or_404(User, id=user_id)
         if user.biography:
             return Response({'error': 'Biography already exists'}, status=status.HTTP_400_BAD_REQUEST)
         if 'biography' in request.data:
             user.biography = request.data['biography']
             user.save()
-            serializer = self.get_serializer(user)
+            serializer = self.serializer_class(user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({'error': 'Biography not provided'}, status=status.HTTP_400_BAD_REQUEST)
 
-class UserBiographyUpdateAPIView(generics.UpdateAPIView): # üstteki ile birleştir.
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
     def put(self, request, *args, **kwargs):
-
-        user_id = authorization_checker(request)  
-        user = get_object_or_404(User, id=user_id)  
+        user_id = authorization_checker(request)
+        user = get_object_or_404(User, id=user_id)
         if 'biography' in request.data:
             user.biography = request.data['biography']
             user.save()
-            serializer = self.get_serializer(user)
+            serializer = self.serializer_class(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'error': 'Biography not provided'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 class FollowerAPIView(APIView):
     def post(self, request, user_id):
@@ -194,7 +191,6 @@ class FollowerAPIView(APIView):
             return Response({'message': 'User followed successfully.'}, status=status.HTTP_200_OK)
         
 
-        
 class FollowerListView(APIView):
     def get(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
@@ -203,7 +199,6 @@ class FollowerListView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     
-
 class RefreshAPIView(APIView):
     def post(self, request):
         refresh_token = request.COOKIES.get('refreshToken')
@@ -212,7 +207,6 @@ class RefreshAPIView(APIView):
         return Response({
             'token': access_token
         })
-
 
 
 class StoryCreateAPIView(APIView):
@@ -285,6 +279,7 @@ class StoryLikeAPIView(APIView):
                 return Response(serializer.data, status=status.HTTP_200_OK)
         raise AuthenticationFailed('unauthenticated')
     
+
 class AuthorStoriesAPIView(APIView):
     def get(self, request, author):
         try:
@@ -295,6 +290,7 @@ class AuthorStoriesAPIView(APIView):
         serializer = StorySerializer(stories, many=True)
         return Response(serializer.data)
     
+
 class CommentAPIView(APIView):
     def post(self, request, story_id):
 
@@ -311,11 +307,11 @@ class CommentAPIView(APIView):
         return Response(serializer.errors, status=400)
     
     
-class StoryCommentListAPIView(generics.ListAPIView):
+class StoryCommentListAPIView(APIView):
     serializer_class = CommentSerializer
 
-    def get_queryset(self):
-        story_id = self.kwargs['story_id']
+    def get(self, request, story_id, *args, **kwargs):
         queryset = Comment.objects.filter(story_id=story_id)
-        return queryset
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
         
