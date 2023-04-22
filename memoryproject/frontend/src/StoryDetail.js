@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { GoogleMap, LoadScriptNext, Marker } from '@react-google-maps/api';
+
+const containerStyle = {
+  width: '100%',
+  height: '400px'
+};
 
 function StoryDetail() {
   const [story, setStory] = useState(null);
@@ -22,6 +28,33 @@ function StoryDetail() {
   if (!story) {
     return <div>Loading...</div>;
   }
+
+  function StoryMarkers({ locations }) {
+    const markers = locations.map((location, index) => (
+      <Marker
+        key={index}
+        position={{
+          lat: parseFloat(location.latitude),
+          lng: parseFloat(location.longitude),
+        }}
+      />
+    ));
+  
+    return <>{markers}</>;
+  }
+
+  // Calculate the average latitude and longitude to find the center of the map
+  const center = story.locations.reduce(
+    (accumulator, location) => {
+      accumulator.lat += parseFloat(location.latitude);
+      accumulator.lng += parseFloat(location.longitude);
+      return accumulator;
+    },
+    { lat: 0, lng: 0 }
+  );
+
+  center.lat /= story.locations.length;
+  center.lng /= story.locations.length;
 
   return (
     <div>
@@ -45,6 +78,18 @@ function StoryDetail() {
               </li>
             ))}
           </ul>
+          <div style={containerStyle}>
+            <LoadScriptNext googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
+              <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={center}
+                zoom={12}
+              >
+                <StoryMarkers locations={story.locations} />
+
+              </GoogleMap>
+            </LoadScriptNext>
+          </div>
         </>
       )}
     </div>

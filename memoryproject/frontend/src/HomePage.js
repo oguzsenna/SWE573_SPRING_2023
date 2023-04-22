@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-
-
 function Pagination({ pageCount, currentPage, onPageChange }) {
   const pages = [...Array(pageCount).keys()].map(i => i + 1);
 
@@ -56,7 +54,7 @@ function HomePage() {
       {stories.map(story => (
         <div key={story.id}>
           <h2>
-            <Link to={`/stories/details/${story.id}`}>{story.title}</Link> {/* Update this line */}
+            <Link to={`/stories/details/${story.id}`}>{story.title}</Link>
           </h2>
           <p>Author: {story.author}</p>
           {/* display other fields as needed */}
@@ -72,10 +70,3 @@ function HomePage() {
 }
 
 export default HomePage;
-
-
-
-
-
-
-
