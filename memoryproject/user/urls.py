@@ -3,6 +3,8 @@ from django.urls import path
 from . import views
 from .views import *
 from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 
@@ -22,10 +24,13 @@ urlpatterns = [
     path('stories/author', GetStoryByAuthorIDView.as_view()),
     path('stories/user', GetStoryByUserIDView.as_view(), name='get-story-by-user-id'),
     path('stories/<int:story_id>/comments/', StoryCommentListAPIView.as_view(), name='story-comment-list'),
+    path('profile/photo', UserPhotoView.as_view(), name='user_profile_photo'),
+    path('stories/details/<int:story_id>/', GetStoryDetailsView.as_view(), name='get_story_details'),
 
-
-   
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 

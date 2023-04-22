@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './user-details-profile.css';
 
 function Pagination({ pageCount, currentPage, onPageChange }) {
   const pages = [...Array(pageCount).keys()].map(i => i + 1);
@@ -25,6 +26,8 @@ function ProfilePage() {
   const [userDetails, setUserDetails] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [profilePhotoFile, setProfilePhotoFile] = useState(null);
+  const [profilePhotoPreview, setProfilePhotoPreview] = useState(null);
   const perPage = 5;
 
   useEffect(() => {
@@ -71,6 +74,7 @@ function ProfilePage() {
 
         if (response.data) {
           setUserDetails(response.data);
+          setProfilePhotoPreview(response.data.profile_photo);
         }
 
       } catch (error) {
@@ -84,31 +88,131 @@ function ProfilePage() {
     setPage(newPage);
   };
 
-  if (!user || !userDetails) {
-    return <div>Loading...</div>;
-  }
+  const handleProfilePhotoChange = event => {
+    setProfilePhotoFile(event.target.files[0]);
+    setProfilePhotoPreview(URL.createObjectURL(event.target.files[0]));
+  };
 
-  return (
+  const handleProfilePhotoAdd = async () => {
+    const formData = new FormData();
+    formData.append('profile_photo', profilePhotoFile);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:8000/api/profile/photo', formData, { // Update the method and URL here
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+      setUserDetails(response.data);
+      setProfilePhotoFile(null);
+      setProfilePhotoPreview(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleProfilePhotoEdit = async () => {
+    const formData = new FormData();
+    formData.append('profile_photo', profilePhotoFile);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put('http://localhost:8000/api/profile/photo', formData, { // Update the method and URL here
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+      setUserDetails(response.data);
+      setProfilePhotoFile(null);
+      setProfilePhotoPreview(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleProfilePhotoDelete = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.delete('http://localhost:8000/api/profile/photo', { 
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+      setUserDetails(response.data);
+      setProfilePhotoPreview(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+    
+    if (!user || !userDetails) {
+    return <div>Loading...</div>;
+
+    }
+    
+    return (
     <div>
-      <div>
-        <h2>User Details</h2>
-        <p>Username: {userDetails.username}</p>
-        <p>Email: {userDetails.email}</p>
-        <p>Biography: {userDetails.biography}</p>
+    <div className="user-details">
+      <div className="profile-photo-section">
+      {profilePhotoPreview && <img src={profilePhotoPreview} alt="Profile photo" />}
+      <input type="file" accept="image/*" onChange={handleProfilePhotoChange} />
+      
       </div>
-      {stories.map(story => (
-        <div key={story.id}>
-          <h2>{story.title}</h2>
-          {/* display other fields as needed */}
-        </div>
-      ))}
-      <Pagination
-        pageCount={totalPages}
-        currentPage={page}
-        onPageChange={handlePageChange}
-      />
+      <div>
+      {profilePhotoFile &&
+        <>
+          <button onClick={handleProfilePhotoAdd}>Add Profile Photo</button>
+          <button onClick={() => setProfilePhotoFile(null)}>Cancel</button>
+        </>
+      }
+      {profilePhotoPreview && !profilePhotoFile &&
+        <>
+          <button onClick={() => setProfilePhotoFile(profilePhotoFile => null)}>Edit Profile Photo</button>
+          <button onClick={handleProfilePhotoDelete}>Delete Profile Photo</button>
+        </>
+      }
+      </div>
+         
+
+    <div>
+      <div className="biography-section">
+        <h3>Username</h3>
+        <p>{userDetails.username}</p>
+      </div>
+
+    <div className="biography-section">
+        <h3>Email</h3>
+        <p>{userDetails.email}</p>
+      </div>
+
+      <div className="biography-section">
+        <h3>Biography</h3>
+        <p>{userDetails.biography}</p>
+      </div>
+    
     </div>
-  );
+
+  </div>
+
+  <h1 className="user-stories-heading">User Stories</h1> 
+  {stories.map(story => (
+    <div key={story.id}>
+      <h2>{story.title}</h2>
+      {/* display other fields as needed */}
+    </div>
+    
+  ))}
+  <Pagination
+    pageCount={totalPages}
+    currentPage={page}
+    onPageChange={handlePageChange}
+  />
+
+  
+</div>
+);
 }
 
 export default ProfilePage;

@@ -7,6 +7,7 @@ import CreateStory from './CreateStory'
 import Logout from './Logout';
 import HomePage from './HomePage';
 import ProfilePage from './ProfilePage';
+import StoryDetail from './StoryDetail';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -61,6 +62,8 @@ function App() {
               <Route path="/create_story" element={<CreateStory />} />
               <Route path="/logout" element={<Logout onLogout={() => setIsLoggedIn(false)} />} />
               <Route path="/homepage" element={<HomePage />} />
+              <Route path="/stories/details" element={<StoryDetail />} /> {/* Add this line */}
+
             </>
           )}
         </Routes>

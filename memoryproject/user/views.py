@@ -13,12 +13,69 @@ from .functions import *
 import json
 from django.shortcuts import render
 from django.core.paginator import Paginator
-
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.storage import FileSystemStorage
+import os
+from django.http import HttpResponse
 
 
 
 
 # Create your views here.
+class UserPhotoView(APIView):
+
+    def get(self, request, user_id=None):
+        
+        #user_id = auth_check(request)
+        if user_id:
+            user = get_object_or_404(User, pk=user_id)
+        else:
+            cookie_value = request.COOKIES['refreshToken']
+            user_id = decode_refresh_token(cookie_value)
+            user = get_object_or_404(User, pk=user_id)
+
+        serializer = UserPhotoSerializer(user)
+
+        file_ext = os.path.splitext(user.profile_photo.name)[-1].lower()
+        content_type = 'image/jpeg' if file_ext == '.jpg' or file_ext == '.jpeg' else 'image/png'
+
+        # Serve the image file with the proper content type and inline attachment
+        response = HttpResponse(user.profile_photo, content_type=content_type)
+        response['Content-Disposition'] = f'inline; filename="{user.profile_photo.name}"'
+
+        return response
+
+    def put(self, request):
+        
+        cookie_value = request.COOKIES['refreshToken']
+        user_id = decode_refresh_token(cookie_value)
+        user = get_object_or_404(User, pk=user_id)
+
+        if not isinstance(request.FILES.get('profile_photo'), InMemoryUploadedFile):
+            return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = UserPhotoSerializer(user, data={'profile_photo': request.FILES['profile_photo']})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request):
+        cookie_value = request.COOKIES['refreshToken']
+        user_id = decode_refresh_token(cookie_value)
+        user = get_object_or_404(User, pk=user_id)
+
+        if user.profile_photo:
+            # Create a FileSystemStorage object to interact with the file system
+            storage = FileSystemStorage()
+            # Delete the file from the storage
+            storage.delete(user.profile_photo.name)
+            # Update the user model to remove the profile photo
+            user.profile_photo = None
+            user.save()
+            return Response({'success': 'Profile photo deleted'})
+        else:
+            return Response({'error': 'Profile photo does not exist'})
 
 class FollowerStoryView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
@@ -101,6 +158,19 @@ class GetStoryByUserIDView(APIView):
         except Story.DoesNotExist:
             return Response({'error': 'User has no stories.'}, status=status.HTTP_404_NOT_FOUND)
     
+
+class GetStoryDetailsView(APIView):
+    def get(self, request, pk):
+        try:
+            story = Story.objects.get(pk=pk)
+        except Story.DoesNotExist:
+            return Response({'message': 'Story not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = StorySerializer(story)
+
+        print(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class RegisterAPIView(APIView):
     def post(self,request):
@@ -226,7 +296,12 @@ class StoryCreateAPIView(APIView):
     def post(self, request):
         print(request.COOKIES)
         cookie_value = request.COOKIES['refreshToken']
-        request_data = json.loads(request.body)
+        #request_data = json.loads(request.body)
+        request_data = json.loads(request.body.decode('utf-8'))
+        locations_data = request_data.pop('locations', [])
+        print(request.body)
+        
+
         user_id = decode_refresh_token(cookie_value)
         print(request_data)
         request_data['author'] = user_id
@@ -260,7 +335,8 @@ class StoryCreateAPIView(APIView):
             request_data['date'] = date_filter['date']
 
 
-        serializer = StorySerializer(data=request_data)
+        serializer = StorySerializer(data=request_data, context={"locations_data": locations_data})
+
         print(request_data)
         if serializer.is_valid():
             serializer.save()

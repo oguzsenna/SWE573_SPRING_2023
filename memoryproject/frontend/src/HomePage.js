@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+
 
 
 function Pagination({ pageCount, currentPage, onPageChange }) {
@@ -34,6 +36,7 @@ function HomePage() {
       })
       .then(response => {
         if (response.data && response.data.stories && response.data.totalPages) {
+          console.log('Received stories:', response.data.stories); 
           setStories(response.data.stories);
           setTotalPages(response.data.totalPages);
         } else {
@@ -51,7 +54,9 @@ function HomePage() {
     <div>
       {stories.map(story => (
         <div key={story.id}>
-          <h2>{story.title}</h2>
+          <h2>
+          <Link to={`/story/${story.storyID}`}>{story.title}</Link>
+          </h2>
           <p>Author: {story.author}</p>
           {/* display other fields as needed */}
         </div>

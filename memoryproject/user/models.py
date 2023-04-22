@@ -16,6 +16,8 @@ class User(AbstractUser):
     repassword = models.CharField(max_length=255)
     biography = models.TextField(blank=True)
     followers = models.ManyToManyField('self', related_name='following', symmetrical=False, blank=True)
+    profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
+
 
     
 class Location(models.Model):

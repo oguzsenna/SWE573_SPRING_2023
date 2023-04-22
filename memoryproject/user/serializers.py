@@ -7,7 +7,7 @@ from datetime import datetime
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ('id','username', 'email', 'password','biography','repassword')
+        fields = ('id','username', 'email', 'password','biography','repassword','profile_photo')
         extra_kwargs = {
             "password": {"write_only": True},
             "re-password": {"write_only": True}
@@ -27,6 +27,7 @@ class UserSerializer(ModelSerializer):
         instance.save()
         return instance
 
+
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
@@ -38,24 +39,41 @@ class LocationDetailsSerializer(serializers.ModelSerializer):
         model = Location
         fields = '__all__'  
 
+
 class StorySerializer(serializers.ModelSerializer):
-    locations = LocationDetailsSerializer(many=True)  # set read_only=True option
+    locations = LocationDetailsSerializer(many=True, read_only=True)
 
     class Meta:
         model = Story
         fields = ['author', 'title', 'content', 'story_tags', 'locations', 'date', 'season', 'start_year', 'end_year', 'start_date', 'end_date']
 
+
     def create(self, validated_data):
-        locations_data = validated_data.pop('locations')
+        locations_data = self.context.get('locations_data', [])
+        #locations_data = validated_data.pop('locations')
         print(locations_data)
         story = Story.objects.create(**validated_data)
         for location_data in locations_data:
             location = Location.objects.create(**location_data)
+            print(location)
             story.locations.add(location)
         return story
     
-class CommentSerializer(serializers.ModelSerializer):
+
+class CommentSerializer(serializers.ModelSerializer): 
+
     
     class Meta:
         model = Comment
         fields = ['id', 'author', 'story', 'content', 'date']
+
+
+class UserPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['profile_photo']
+    
+    def update(self, instance, validated_data):
+        instance.profile_photo = validated_data.get('profile_photo', instance.profile_photo)
+        instance.save()
+        return instance
