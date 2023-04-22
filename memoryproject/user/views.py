@@ -160,9 +160,9 @@ class GetStoryByUserIDView(APIView):
     
 
 class GetStoryDetailsView(APIView):
-    def get(self, request, pk):
+    def get(self, request, story_id):
         try:
-            story = Story.objects.get(pk=pk)
+            story = Story.objects.get(pk=story_id)
         except Story.DoesNotExist:
             return Response({'message': 'Story not found.'}, status=status.HTTP_404_NOT_FOUND)
 
