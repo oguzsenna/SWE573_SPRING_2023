@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from .models import *
 from datetime import datetime
+from rest_framework.fields import SerializerMethodField
 
 
 class UserSerializer(ModelSerializer):
@@ -45,7 +46,7 @@ class StorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Story
-        fields = ['id','author', 'title', 'content', 'story_tags', 'locations', 'date', 'season', 'start_year', 'end_year', 'start_date', 'end_date']
+        fields = ['id','author', 'title', 'content', 'story_tags', 'locations', 'date', 'season', 'start_year', 'end_year', 'start_date', 'end_date','likes']
 
 
     def create(self, validated_data):
@@ -57,6 +58,8 @@ class StorySerializer(serializers.ModelSerializer):
             location = Location.objects.create(**location_data)
             print(location)
             story.locations.add(location)
+
+            
         return story
     
 

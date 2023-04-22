@@ -11,6 +11,8 @@ const containerStyle = {
 function StoryDetail() {
   const [story, setStory] = useState(null);
   const { story_id } = useParams();
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
     axios
@@ -18,6 +20,9 @@ function StoryDetail() {
       .then(response => {
         if (response.data) {
           setStory(response.data);
+          setLikeCount(response.data.likes.length);
+          console.log(setLikeCount)
+          setLiked(response.data.liked_by_user); // Use liked_by_user field from API response
         } else {
           console.error('Invalid API response format');
         }
@@ -41,6 +46,32 @@ function StoryDetail() {
     ));
   
     return <>{markers}</>;
+  }
+
+  async function toggleLike() {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`http://localhost:8000/api/like/${story_id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      if (response.status === 200) {
+        const updatedStory = response.data;
+        if (updatedStory.likes) {
+          setLikeCount(updatedStory.likes.length);
+          setLiked(updatedStory.likes.includes(/* Your user id */));
+        } else {
+          console.error('Error toggling like: "likes" field is missing in the response data');
+        }
+      } else {
+        console.error('Error toggling like:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
   }
 
   // Calculate the average latitude and longitude to find the center of the map
@@ -89,6 +120,10 @@ function StoryDetail() {
 
               </GoogleMap>
             </LoadScriptNext>
+          </div>
+          <div>
+            <span>{likeCount}</span> Likes
+            <button onClick={toggleLike}>{liked ? 'Unlike' : 'Like'}</button>
           </div>
         </>
       )}

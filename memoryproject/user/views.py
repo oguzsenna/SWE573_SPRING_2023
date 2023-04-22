@@ -24,7 +24,7 @@ from django.http import HttpResponse
 # Create your views here.
 class UserPhotoView(APIView):
 
-    def get(self, request, user_id=None):
+    def get(self, request, user_id):
         
         #user_id = auth_check(request)
         if user_id:
@@ -54,7 +54,7 @@ class UserPhotoView(APIView):
         if not isinstance(request.FILES.get('profile_photo'), InMemoryUploadedFile):
             return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = UserPhotoSerializer(user, data={'profile_photo': request.FILES['profile_photo']})
+        serializer = UserPhotoSerializer(user, data={user.profile_photo: request.FILES['profile_photo']})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -351,20 +351,19 @@ class StoryLikeAPIView(APIView):
   
     def post(self, request, pk):
         story = get_object_or_404(Story, pk=pk)
-        auth = get_authorization_header(request).split() #first part will be bearer second part will be actual token
-        print(auth)
-        if auth and len(auth)==2:
-            token = auth[1].decode('utf-8')
-            id = decode_refresh_token(token)
-            user= User.objects.filter(pk=id).first()
-            print(user)
-            if user:
-                if user in story.likes.all():
-                    story.likes.remove(user)
-                else:
-                    story.likes.add(user)
-                serializer = StorySerializer(story, context={'request':request})
-                return Response(serializer.data, status=status.HTTP_200_OK)
+        cookie_value = request.COOKIES['refreshToken']
+        user_id = decode_refresh_token(cookie_value)
+        
+            
+        user= User.objects.filter(pk=user_id).first()
+        print(user)
+        if user:
+            if user in story.likes.all():
+                story.likes.remove(user)
+            else:
+                story.likes.add(user)
+            serializer = StorySerializer(story, context={'request':request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
         raise AuthenticationFailed('unauthenticated')
     
 
