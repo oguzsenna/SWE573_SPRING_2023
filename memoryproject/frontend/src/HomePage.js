@@ -35,8 +35,9 @@ function HomePage() {
         withCredentials: true,
       })
       .then(response => {
+        console.log('API response:', response.data); // Log the response data
         if (response.data && response.data.stories && response.data.totalPages) {
-          console.log('Received stories:', response.data.stories); 
+          console.log('Received stories:', response.data.stories);
           setStories(response.data.stories);
           setTotalPages(response.data.totalPages);
         } else {
@@ -55,7 +56,7 @@ function HomePage() {
       {stories.map(story => (
         <div key={story.id}>
           <h2>
-          <Link to={`/story/${story.storyID}`}>{story.title}</Link>
+            <Link to={`/stories/details/${story.id}`}>{story.title}</Link> {/* Update this line */}
           </h2>
           <p>Author: {story.author}</p>
           {/* display other fields as needed */}
@@ -71,3 +72,10 @@ function HomePage() {
 }
 
 export default HomePage;
+
+
+
+
+
+
+

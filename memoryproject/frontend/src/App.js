@@ -62,7 +62,7 @@ function App() {
               <Route path="/create_story" element={<CreateStory />} />
               <Route path="/logout" element={<Logout onLogout={() => setIsLoggedIn(false)} />} />
               <Route path="/homepage" element={<HomePage />} />
-              <Route path="/stories/details" element={<StoryDetail />} /> {/* Add this line */}
+              <Route path="/stories/details/:story_id" element={<StoryDetail />} /> {/* Update this line */}
 
             </>
           )}
