@@ -1,3 +1,4 @@
+import './StoryDetail.css';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
@@ -121,9 +122,12 @@ function StoryDetail() {
               </GoogleMap>
             </LoadScriptNext>
           </div>
-          <div>
-            <span>{likeCount}</span> Likes
-            <button onClick={toggleLike}>{liked ? 'Unlike' : 'Like'}</button>
+          <div className="like-container">
+            <button className="like-button" onClick={toggleLike}>
+              <i className={liked ? 'fa fa-heart' : 'fa fa-heart-o'} aria-hidden="true" />
+              {liked ? ' Unlike' : ' Like'}
+            </button>
+            <span className="like-count">{likeCount} {likeCount === 1 ? 'Like' : 'Likes'}</span>
           </div>
         </>
       )}

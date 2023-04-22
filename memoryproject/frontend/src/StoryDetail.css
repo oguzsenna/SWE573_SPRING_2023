@@ -1,0 +1,22 @@
+.like-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .like-button {
+    background-color: transparent;
+    border: none;
+    color: #e74c3c;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+  
+  .like-button:hover {
+    color: #c0392b;
+  }
+  
+  .like-count {
+    font-size: 1.1rem;
+  }
+  
