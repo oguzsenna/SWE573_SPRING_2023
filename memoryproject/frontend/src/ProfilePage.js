@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './user-details-profile.css';
+import { Link } from 'react-router-dom';
+
 
 function Pagination({ pageCount, currentPage, onPageChange }) {
   const pages = [...Array(pageCount).keys()].map(i => i + 1);
@@ -198,10 +200,13 @@ function ProfilePage() {
 
   <h1 className="user-stories-heading">User Stories</h1> 
   {stories.map(story => (
-    <div key={story.id}>
-      <h2>{story.title}</h2>
-      {/* display other fields as needed */}
-    </div>
+  <div key={story.id}>
+    <h2>
+      <Link to={`/stories/details/${story.id}`}>{story.title}</Link>
+    </h2>
+    {/* display other fields as needed */}
+  </div>
+
     
   ))}
   <Pagination
