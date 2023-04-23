@@ -10,6 +10,9 @@ import HomePage from './HomePage';
 import ProfilePage from './ProfilePage';
 import StoryDetail from './StoryDetail';
 import PublicProfilePage from './PublicProfilePage';
+import UserSearch from './UserSearch';
+
+
 
 
 function App() {
@@ -66,6 +69,8 @@ function App() {
                 <Route path="/homepage" element={<HomePage />} />
                 <Route path="/stories/details/:story_id" element={<StoryDetail />} />
                 <Route path="/users/:username" element={<PublicProfilePage /> } />
+                <Route path="/UserSearch/:searchQuery" element={<UserSearch />} />
+
 
               </>
             )}

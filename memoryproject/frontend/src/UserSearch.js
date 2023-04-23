@@ -1,0 +1,56 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useParams,useNavigate } from 'react-router-dom';
+
+
+function SearchUserResults({  }) {
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { searchQuery } = useParams();
+
+  const navigate = useNavigate();
+
+  const handleUserClick = async (id) => {
+    navigate(`/users/${id}`);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!searchQuery) {
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const searchResponse = await axios.get(
+          `http://localhost:8000/api/search_user?search=${searchQuery}`,
+          { withCredentials: true }
+        );
+        console.log('searchResponse:', searchResponse);
+        setResults(searchResponse.data.users);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [searchQuery]);
+
+  return (
+    <div>
+      <h2>Search Results</h2>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        results.map(user => (
+          <div key={user.username} onClick={() => handleUserClick(user.username)}>
+            <h3>{user.username}</h3>
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
+export default SearchUserResults;

@@ -167,7 +167,7 @@ function StoryDetail() {
           </div>
         </>
       )}
-      <Link to="/homepage">Go back</Link> {/* Added Link component */}
+      <Link to="/homepage">Go back</Link> 
 
     </div>
   );

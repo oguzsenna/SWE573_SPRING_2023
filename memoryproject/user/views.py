@@ -17,6 +17,8 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.storage import FileSystemStorage
 import os
 from django.http import HttpResponse
+from django.db.models import Q
+
 
 
 
@@ -27,6 +29,7 @@ class UserProfileByUsernameView(APIView):
         user = get_object_or_404(User, username=username)
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
 
 class UsernamesByIDsView(APIView):
     def get(self, request):
@@ -198,7 +201,7 @@ class GetStoryByUsernameView(APIView):
 
         return Response({'stories': serializer.data, 'totalPages': total_pages}, status=status.HTTP_200_OK)
     
-    
+
 class GetStoryDetailsView(APIView):
     def get(self, request, story_id):
         try:
@@ -443,3 +446,23 @@ class StoryCommentListAPIView(APIView):
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
         
+
+class SearchUserView(APIView):
+
+    
+
+    def get(self, request, *args, **kwargs):
+
+        cookie_value = request.COOKIES['refreshToken']
+        user_id = decode_refresh_token(cookie_value)
+        user = get_object_or_404(User, pk=user_id)
+
+        search_query = request.query_params.get('search', '')
+
+        # Search for users by username
+        user_queryset = User.objects.filter(Q(username__icontains=search_query))
+        users_serializer = UserSerializer(user_queryset, many=True)
+
+        return Response({
+            "users": users_serializer.data,
+        }, status=status.HTTP_200_OK)

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { useNavigate, navigate } from 'react-router-dom';
+
 
 function Pagination({ pageCount, currentPage, onPageChange }) {
   const pages = [...Array(pageCount).keys()].map(i => i + 1);
@@ -24,8 +26,10 @@ function HomePage() {
   const [stories, setStories] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-
+  const [searchQuery, setSearchQuery] = useState("");
   const perPage = 5;
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     axios
@@ -49,9 +53,21 @@ function HomePage() {
   const handlePageChange = newPage => {
     setPage(newPage);
   };
+  const handleSearch = async () => {
+    navigate(`/UserSearch/${searchQuery}`);
+  };
 
   return (
     <div>
+      <div>
+      <input
+        type="text"
+        placeholder="Search usernames..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      <button onClick={handleSearch}>Search</button>
+      </div>
       {stories.map(story => (
         <div key={story.id}>
           <h2>

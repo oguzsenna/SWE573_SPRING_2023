@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 
 function PublicProfilePage() {
   const [user, setUser] = useState(null);
   const [stories, setStories] = useState([]);
   const [following, setFollowing] = useState(false);
   const { username } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -46,7 +47,12 @@ function PublicProfilePage() {
       );
 
       if (response.status === 200) {
-        setFollowing(response.data.message === 'User followed successfully.');
+        const message = response.data.message;
+        setFollowing(message === 'User unfollowed successfully.');
+        window.alert(message);
+        if (message === 'User unfollowed successfully.') {
+          navigate('/HomePage');
+        }
       } else {
         console.error('Error toggling follow:', response.statusText);
       }
