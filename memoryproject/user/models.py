@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import ArrayField
 from django.db.models import Value
+from datetime import datetime
+from django.utils import timezone
+
+
 
 
 
@@ -12,6 +16,8 @@ class User(AbstractUser):
     repassword = models.CharField(max_length=255)
     biography = models.TextField(blank=True)
     followers = models.ManyToManyField('self', related_name='following', symmetrical=False, blank=True)
+    profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
+
 
     
 class Location(models.Model):
@@ -19,8 +25,8 @@ class Location(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
 
-    class Meta:
-        unique_together = ('latitude', 'longitude')
+    #class Meta:
+     #   unique_together = ('latitude', 'longitude')
 
 class Story(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -30,6 +36,12 @@ class Story(models.Model):
     date = models.DateField(null= True)
     likes = models.ManyToManyField(User, related_name='liked_stories', blank=True)
     locations = models.ManyToManyField(Location, blank=True)
+    season = models.CharField(max_length=255, null=True, blank=True)
+    start_year = models.PositiveIntegerField(null=True, blank=True)
+    end_year = models.PositiveIntegerField(null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
 
 

@@ -24,78 +24,61 @@ function Register() {
   const handleSubmit = (event) => {
     event.preventDefault();
     axios.post('http://localhost:8000/api/register/', formData)
-    .then(response => {
+      .then(response => {
         console.log(response.data);
         toast.success('User created successfully');
+        setFormData({
+          username: '',
+          email: '',
+          password: '',
+          repassword: '',
+          biography: ''
+        }); // reset the form data
+      
       })
       .catch(error => {
         console.log(error.response.data);
         toast.error('User already exists');
+        setFormData({
+          ...formData,
+          password: '',
+          repassword: '',
+          username: '',
+          email:''
+
+        }); // reset the password fields
       });
-  };
-  useEffect(() => {
-    document.title = 'Register Page'; // Set the document title
-  }, []);
+  }; // <--- add this closing brace
 
   return (
     <div>
-        <h1 className='big-heading'>Register Page</h1>
-
-        <form onSubmit={handleSubmit}>
+      <h1 className='big-heading'>Register Page</h1>
+      <form onSubmit={handleSubmit}>
         <label>
-            Username:
-            <input type="text" name="username" onChange={handleInputChange} value={formData.username} />
+          Username:
+          <input type="text" name="username" onChange={handleInputChange} value={formData.username} />
         </label>
         <br />
         <label>
-            Email:
-            <input type="email" name="email" onChange={handleInputChange} value={formData.email} />
+          Email:
+          <input type="email" name="email" onChange={handleInputChange} value={formData.email} />
         </label>
         <br />
         <label>
-            Password:
-            <input type="password" name="password" onChange={handleInputChange} value={formData.password} />
+          Password:
+          <input type="password" name="password" onChange={handleInputChange} value={formData.password} />
         </label>
         <br />
         <label>
-            Confirm Password:
-            <input type="password" name="repassword" onChange={handleInputChange} value={formData.repassword} />
+          Confirm Password:
+          <input type="password" name="repassword" onChange={handleInputChange} value={formData.repassword} />
         </label>
         <br />
-      
-    <button type="submit">Register</button>
-    <ToastContainer position="bottom-right" />
- 
-    </form>
+        <button type="submit">Register</button>
+        <ToastContainer position="bottom-right" />
+      </form>
     </div>
-    
   );
-  
-  
-  
-  
-  
-  
 }
 
 export default Register;
-
-
-/*
-
-import React from 'react';
-import Register from './Register';
-
-function MyPage() {
-  return (
-    <div>
-      <h1>Register</h1>
-      <Register />
-    </div>
-  );
-}
-
-export default MyPage;
-we can export the register component so that we can use it in other componenrts or pages.
-we create another component called mypage that renders register component along with heading
-*/
