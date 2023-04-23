@@ -17,8 +17,6 @@ function StoryDetail() {
   const { story_id } = useParams();
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
-  const [following, setFollowing] = useState(false);
-  const [followed, setFollowed] = useState(/* Check if the user is a follower of the author */);
 
 
 
@@ -32,7 +30,6 @@ function StoryDetail() {
           setStory(response.data);
           setLikeCount(response.data.likes.length);
           setLiked(response.data.liked_by_user);
-          setFollowing(response.data.following_author);
         } else {
           console.error('Invalid API response format');
         }
@@ -84,29 +81,7 @@ function StoryDetail() {
     }
   }
 
-  async function toggleFollow() {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        `http://localhost:8000/api/user/follow/${story.author_id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-  
-      if (response.status === 200) {
-        setFollowed(response.data.message === "User followed successfully.");
-      } else {
-        console.error("Error toggling follow:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error toggling follow:", error.response ? error.response.data : error);
-    }
-  }
+
 
   // Calculate the average latitude and longitude to find the center of the map
   const center = story.locations.reduce(
@@ -126,7 +101,6 @@ function StoryDetail() {
 
       <h2>{story.title}</h2>
       <p>Author: {story.author}</p>
-          <button onClick={toggleFollow}>{followed ? "Unfollow" : "Follow"}</button>
             
       {story.content && <p>Content: {story.content}</p>}
       {story.story_tags.length > 0 && <p>Story Tags: {story.story_tags.join(', ')}</p>}

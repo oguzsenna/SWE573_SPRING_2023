@@ -74,8 +74,9 @@ class UserPhotoView(APIView):
         serializer = UserPhotoSerializer(user, data={user.profile_photo: request.FILES['profile_photo']})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     
     def delete(self, request):
         cookie_value = request.COOKIES['refreshToken']
@@ -90,9 +91,9 @@ class UserPhotoView(APIView):
             # Update the user model to remove the profile photo
             user.profile_photo = None
             user.save()
-            return Response({'success': 'Profile photo deleted'})
+            return Response({'success': 'Profile photo deleted'}, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'Profile photo does not exist'})
+            return Response({'error': 'Profile photo does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class FollowerStoryView(APIView):

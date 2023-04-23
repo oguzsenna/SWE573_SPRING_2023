@@ -31,6 +31,8 @@ function ProfilePage() {
   const [profilePhotoFile, setProfilePhotoFile] = useState(null);
   const [profilePhotoPreview, setProfilePhotoPreview] = useState(null);
   const perPage = 5;
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
+
 
   useEffect(() => {
     const fetchStories = async () => { 
@@ -62,6 +64,29 @@ function ProfilePage() {
 
     fetchStories();
   }, [page]);
+
+  useEffect(() => {
+    const fetchProfilePhoto = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:8000/api/profile/photo', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+          responseType: 'blob',
+        });
+  
+        const imageUrl = URL.createObjectURL(response.data);
+        setProfilePhotoUrl(imageUrl);
+  
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
+    fetchProfilePhoto();
+  }, [userDetails]);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -98,14 +123,18 @@ function ProfilePage() {
   const handleProfilePhotoAdd = async () => {
     const formData = new FormData();
     formData.append('profile_photo', profilePhotoFile);
+    
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8000/api/profile/photo', formData, { // Update the method and URL here
+      const response = await axios.put('http://localhost:8000/api/profile/photo', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         withCredentials: true,
       });
+      if (response.status === 200) {
+        setProfilePhotoUrl(URL.createObjectURL(profilePhotoFile));
+      }
       setUserDetails(response.data);
       setProfilePhotoFile(null);
       setProfilePhotoPreview(null);
@@ -117,14 +146,19 @@ function ProfilePage() {
   const handleProfilePhotoEdit = async () => {
     const formData = new FormData();
     formData.append('profile_photo', profilePhotoFile);
+    
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put('http://localhost:8000/api/profile/photo', formData, { // Update the method and URL here
+      const response = await axios.put('http://localhost:8000/api/profile/photo', formData, {
+
         headers: {
           Authorization: `Bearer ${token}`,
         },
         withCredentials: true,
       });
+      if (response.status === 200) {
+        setProfilePhotoUrl(URL.createObjectURL(profilePhotoFile));
+      }
       setUserDetails(response.data);
       setProfilePhotoFile(null);
       setProfilePhotoPreview(null);
@@ -134,6 +168,7 @@ function ProfilePage() {
   };
 
   const handleProfilePhotoDelete = async () => {
+    
     try {
       const token = localStorage.getItem('token');
       const response = await axios.delete('http://localhost:8000/api/profile/photo', { 
@@ -142,6 +177,9 @@ function ProfilePage() {
         },
         withCredentials: true,
       });
+      if (response.status === 200) {
+        setProfilePhotoUrl(null);
+      }
       setUserDetails(response.data);
       setProfilePhotoPreview(null);
     } catch (error) {
@@ -157,11 +195,11 @@ function ProfilePage() {
     return (
     <div>
     <div className="user-details">
-      <div className="profile-photo-section">
-      {profilePhotoPreview && <img src={profilePhotoPreview} alt="Profile photo" />}
+    <div className="profile-photo-section">
+      {profilePhotoUrl && <img src={profilePhotoUrl} alt="Profile photo" />}
       <input type="file" accept="image/*" onChange={handleProfilePhotoChange} />
+    </div>
       
-      </div>
       <div>
       {profilePhotoFile &&
         <>
