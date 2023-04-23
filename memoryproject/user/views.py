@@ -22,6 +22,20 @@ from django.http import HttpResponse
 
 
 # Create your views here.
+class UserProfileByUsernameView(APIView):
+    def get(self, request, username):
+        user = get_object_or_404(User, username=username)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+class UsernamesByIDsView(APIView):
+    def get(self, request):
+
+        user_ids = request.GET.getlist('user_ids[]')
+        usernames = User.objects.filter(id__in=user_ids).values_list('username', flat=True)
+        return Response(list(usernames))
+    
+
 class UserPhotoView(APIView):
 
     def get(self, request, user_id):
@@ -76,6 +90,7 @@ class UserPhotoView(APIView):
             return Response({'success': 'Profile photo deleted'})
         else:
             return Response({'error': 'Profile photo does not exist'})
+
 
 class FollowerStoryView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
@@ -159,6 +174,31 @@ class GetStoryByUserIDView(APIView):
             return Response({'error': 'User has no stories.'}, status=status.HTTP_404_NOT_FOUND)
     
 
+class GetStoryByUsernameView(APIView):
+    def get(self, request, username):
+        page = request.query_params.get('page', 1)
+        per_page = request.query_params.get('perPage', 5)
+        try:
+            page = int(page)
+            per_page = int(per_page)
+        except ValueError:
+            return Response({'error': 'Invalid page or perPage value'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({'error': 'User does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+
+        stories = Story.objects.filter(author=user).order_by('-created_at')
+
+        paginator = Paginator(stories, per_page)
+        total_pages = paginator.num_pages
+        stories_page = paginator.page(page)
+        serializer = StorySerializer(stories_page, many=True)
+
+        return Response({'stories': serializer.data, 'totalPages': total_pages}, status=status.HTTP_200_OK)
+    
+    
 class GetStoryDetailsView(APIView):
     def get(self, request, story_id):
         try:
@@ -259,20 +299,21 @@ class UserBiographyAPIView(APIView):
 class FollowerAPIView(APIView):
     def post(self, request, user_id):
         user_to_follow = get_object_or_404(User, id=user_id)
-        user = authorization_checker(request)
-        if user == user_to_follow:
-            return Response({'error': 'You cannot follow yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+        cookie_value = request.COOKIES['refreshToken']
+        user_id = decode_refresh_token(cookie_value)
+        user = User.objects.filter(pk=user_id).first()
+
         if user == user_to_follow:
             return Response({'error': 'You cannot follow yourself.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if user_to_follow.followers.filter(id=user).exists():
+        if user_to_follow.followers.filter(id=user_id).exists():
             user_to_follow.followers.remove(user)
             return Response({'message': 'User unfollowed successfully.'}, status=status.HTTP_200_OK)
         else:
             user_to_follow.followers.add(user)
             return Response({'message': 'User followed successfully.'}, status=status.HTTP_200_OK)
-        
 
+        
 class FollowerListView(APIView):
     def get(self, request, user_id):
         user = get_object_or_404(User, id=user_id)

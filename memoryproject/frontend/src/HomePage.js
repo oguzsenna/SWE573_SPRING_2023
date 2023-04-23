@@ -24,6 +24,7 @@ function HomePage() {
   const [stories, setStories] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+
   const perPage = 5;
 
   useEffect(() => {
@@ -56,7 +57,7 @@ function HomePage() {
           <h2>
             <Link to={`/stories/details/${story.id}`}>{story.title}</Link>
           </h2>
-          <p>Author: {story.author}</p>
+          <p>Author: <Link to={`/users/${story.author_username}`}>{story.author_username}</Link></p>
           {/* display other fields as needed */}
         </div>
       ))}
@@ -68,5 +69,6 @@ function HomePage() {
     </div>
   );
 }
+
 
 export default HomePage;

@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { GoogleMap, LoadScriptNext, Marker } from '@react-google-maps/api';
+import { Link } from 'react-router-dom';
+
+
 
 const containerStyle = {
   width: '100%',
@@ -14,21 +17,27 @@ function StoryDetail() {
   const { story_id } = useParams();
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [following, setFollowing] = useState(false);
+  const [followed, setFollowed] = useState(/* Check if the user is a follower of the author */);
+
+
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/stories/details/${story_id}`, { withCredentials: true })
-      .then(response => {
+      .get(`http://localhost:8000/api/stories/details/${story_id}`, {
+        withCredentials: true,
+      })
+      .then((response) => {
         if (response.data) {
           setStory(response.data);
           setLikeCount(response.data.likes.length);
-          console.log(setLikeCount)
-          setLiked(response.data.liked_by_user); // Use liked_by_user field from API response
+          setLiked(response.data.liked_by_user);
+          setFollowing(response.data.following_author);
         } else {
           console.error('Invalid API response format');
         }
       })
-      .catch(error => console.error(error));
+      .catch((error) => console.error(error));
   }, [story_id]);
 
   if (!story) {
@@ -75,6 +84,30 @@ function StoryDetail() {
     }
   }
 
+  async function toggleFollow() {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `http://localhost:8000/api/user/follow/${story.author_id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+  
+      if (response.status === 200) {
+        setFollowed(response.data.message === "User followed successfully.");
+      } else {
+        console.error("Error toggling follow:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error toggling follow:", error.response ? error.response.data : error);
+    }
+  }
+
   // Calculate the average latitude and longitude to find the center of the map
   const center = story.locations.reduce(
     (accumulator, location) => {
@@ -90,8 +123,11 @@ function StoryDetail() {
 
   return (
     <div>
+
       <h2>{story.title}</h2>
       <p>Author: {story.author}</p>
+          <button onClick={toggleFollow}>{followed ? "Unfollow" : "Follow"}</button>
+            
       {story.content && <p>Content: {story.content}</p>}
       {story.story_tags.length > 0 && <p>Story Tags: {story.story_tags.join(', ')}</p>}
       {story.date && <p>Date: {story.date}</p>}
@@ -124,13 +160,15 @@ function StoryDetail() {
           </div>
           <div className="like-container">
             <button className="like-button" onClick={toggleLike}>
-              <i className={liked ? 'fa fa-heart' : 'fa fa-heart-o'} aria-hidden="true" />
+              <i className={`fa ${liked ? 'fa-heart full-heart' : 'fa-heart-o'}`} aria-hidden="true" />
               {liked ? ' Unlike' : ' Like'}
             </button>
             <span className="like-count">{likeCount} {likeCount === 1 ? 'Like' : 'Likes'}</span>
           </div>
         </>
       )}
+      <Link to="/homepage">Go back</Link> {/* Added Link component */}
+
     </div>
   );
 }

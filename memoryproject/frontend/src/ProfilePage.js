@@ -33,7 +33,7 @@ function ProfilePage() {
   const perPage = 5;
 
   useEffect(() => {
-    const fetchStories = async () => {
+    const fetchStories = async () => { 
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get('http://localhost:8000/api/stories/user', {

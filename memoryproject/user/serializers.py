@@ -3,6 +3,7 @@ from rest_framework.serializers import ModelSerializer
 from .models import *
 from datetime import datetime
 from rest_framework.fields import SerializerMethodField
+from .models import Story, Location
 
 
 class UserSerializer(ModelSerializer):
@@ -43,26 +44,27 @@ class LocationDetailsSerializer(serializers.ModelSerializer):
 
 class StorySerializer(serializers.ModelSerializer):
     locations = LocationDetailsSerializer(many=True, read_only=True)
+    author_username = serializers.ReadOnlyField(source='author.username')
+
 
     class Meta:
         model = Story
-        fields = ['id','author', 'title', 'content', 'story_tags', 'locations', 'date', 'season', 'start_year', 'end_year', 'start_date', 'end_date','likes']
-
+        fields = [
+            'id', 'author', 'author_username', 'title', 'content', 'story_tags',
+            'locations', 'date', 'season', 'start_year', 'end_year',
+            'start_date', 'end_date', 'likes'
+        ]
 
     def create(self, validated_data):
         locations_data = self.context.get('locations_data', [])
-        #locations_data = validated_data.pop('locations')
-        print(locations_data)
         story = Story.objects.create(**validated_data)
         for location_data in locations_data:
             location = Location.objects.create(**location_data)
-            print(location)
             story.locations.add(location)
 
-            
         return story
-    
 
+    
 class CommentSerializer(serializers.ModelSerializer): 
 
     

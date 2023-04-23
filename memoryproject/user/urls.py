@@ -26,6 +26,12 @@ urlpatterns = [
     path('stories/<int:story_id>/comments/', StoryCommentListAPIView.as_view(), name='story-comment-list'),
     path('profile/photo', UserPhotoView.as_view(), name='user_profile_photo'),
     path('stories/details/<int:story_id>/', GetStoryDetailsView.as_view(), name='get_story_details'),
+    path('usernamesbyId',UsernamesByIDsView.as_view()),
+    path('users/<str:username>/', UserProfileByUsernameView.as_view(), name='user_profile_by_username'),
+    path('stories/<str:username>/', GetStoryByUsernameView.as_view(), name='get_story_by_username'),
+
+
+
 
 ]
 

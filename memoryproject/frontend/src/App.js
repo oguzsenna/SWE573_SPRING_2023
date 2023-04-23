@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import { LoadScript } from '@react-google-maps/api'; // Add this import
+import { BrowserRouter as Router, Route, Routes, Link, Switch} from 'react-router-dom';
+import { LoadScriptNext, LoadScript } from '@react-google-maps/api';
 import Register from './Register';
 import Login from './Login';
 import './App.css';
@@ -9,6 +9,8 @@ import Logout from './Logout';
 import HomePage from './HomePage';
 import ProfilePage from './ProfilePage';
 import StoryDetail from './StoryDetail';
+import PublicProfilePage from './PublicProfilePage';
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -42,8 +44,9 @@ function App() {
               )}
             </div>
           </nav>
-
+          <LoadScriptNext googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY} libraries={['places']}>
           <Routes>
+
             {!isLoggedIn && (
               <>
                 <Route index path="/" element={
@@ -62,9 +65,13 @@ function App() {
                 <Route path="/logout" element={<Logout onLogout={() => setIsLoggedIn(false)} />} />
                 <Route path="/homepage" element={<HomePage />} />
                 <Route path="/stories/details/:story_id" element={<StoryDetail />} />
+                <Route path="/users/:username" element={<PublicProfilePage /> } />
+
               </>
             )}
           </Routes>
+        </LoadScriptNext>
+
         </div>
       </Router>
      

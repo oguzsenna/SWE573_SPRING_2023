@@ -20,3 +20,22 @@
     font-size: 1.1rem;
   }
   
+  .follow-button {
+    background-color: transparent;
+    border: 1px solid #3498db;
+    color: #3498db;
+    padding: 4px 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-bottom: 8px;
+  }
+  
+  .follow-button:hover {
+    background-color: #3498db;
+    color: white;
+  }
+
+  .full-heart {
+    color: red;
+  }
+  

@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { GoogleMap, LoadScript, Autocomplete, Marker } from '@react-google-maps/api';
+import { LoadScriptNext } from '@react-google-maps/api';
+
 
 
 //css files
@@ -227,7 +229,6 @@ function CreateStory() {
   
 
   return (
-    <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY} libraries={['places']}>
       <div>
         <h1 className='big-heading'>Create Story</h1>
         <div className="create-story-container">
@@ -311,7 +312,6 @@ function CreateStory() {
       </div>
     </div>
   </div>
-</LoadScript>
   );
 }
 
