@@ -60,6 +60,8 @@ function HomePage() {
   return (
     <div>
       <div>
+      <br />
+      <br />
       <input
         type="text"
         placeholder="Search usernames..."

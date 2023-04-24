@@ -58,4 +58,15 @@
     color: #000000;
     font-weight: normal;
   }
+
+  .profile-photo-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .profile-photo-section img {
+    max-width: 100%;
+    max-height: 100%;
+  }
   

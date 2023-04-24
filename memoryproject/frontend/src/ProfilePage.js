@@ -32,10 +32,13 @@ function ProfilePage() {
   const [profilePhotoPreview, setProfilePhotoPreview] = useState(null);
   const perPage = 5;
   const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
+  const [userLoading, setUserLoading] = useState(true);
+  const [userDetailsLoading, setUserDetailsLoading] = useState(true);
+
 
 
   useEffect(() => {
-    const fetchStories = async () => { 
+    const fetchStories = async () => {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get('http://localhost:8000/api/stories/user', {
@@ -49,21 +52,37 @@ function ProfilePage() {
             perPage,
           },
         });
-
+    
         if (response.data && response.data.stories && response.data.totalPages) {
-          setUser(response.data.stories[0].author);
+          if (response.data.stories.length > 0) {
+            setUser(response.data.stories[0].author);
+          } else {
+            setUser(null);
+          }
           setStories(response.data.stories);
           setTotalPages(response.data.totalPages);
         } else {
           console.error('Invalid API response format');
         }
+        setUserLoading(false);
       } catch (error) {
         console.error(error);
       }
     };
+    
 
     fetchStories();
   }, [page]);
+
+   const updateProfilePhotoUrl = () => {
+    if (profilePhotoFile) {
+      setProfilePhotoUrl(URL.createObjectURL(profilePhotoFile));
+    } else if (userDetails && userDetails.profile_photo) {
+      setProfilePhotoUrl(userDetails.profile_photo);
+    } else {
+      setProfilePhotoUrl(null);
+    }
+  };
 
   useEffect(() => {
     const fetchProfilePhoto = async () => {
@@ -98,12 +117,14 @@ function ProfilePage() {
           },
           withCredentials: true,
         });
-
+    
         if (response.data) {
           setUserDetails(response.data);
           setProfilePhotoPreview(response.data.profile_photo);
+        } else {
+          console.error('Invalid API response format');
         }
-
+        setUserDetailsLoading(false);
       } catch (error) {
         console.error(error);
       }
@@ -123,7 +144,7 @@ function ProfilePage() {
   const handleProfilePhotoAdd = async () => {
     const formData = new FormData();
     formData.append('profile_photo', profilePhotoFile);
-    
+  
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put('http://localhost:8000/api/profile/photo', formData, {
@@ -133,11 +154,11 @@ function ProfilePage() {
         withCredentials: true,
       });
       if (response.status === 200) {
-        setProfilePhotoUrl(URL.createObjectURL(profilePhotoFile));
+        setUserDetails(response.data);
+        setProfilePhotoFile(null);
+        setProfilePhotoPreview(null);
+        updateProfilePhotoUrl();
       }
-      setUserDetails(response.data);
-      setProfilePhotoFile(null);
-      setProfilePhotoPreview(null);
     } catch (error) {
       console.error(error);
     }
@@ -168,52 +189,48 @@ function ProfilePage() {
   };
 
   const handleProfilePhotoDelete = async () => {
-    
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.delete('http://localhost:8000/api/profile/photo', { 
+      const response = await axios.delete('http://localhost:8000/api/profile/photo', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         withCredentials: true,
       });
       if (response.status === 200) {
+        setUserDetails(response.data);
         setProfilePhotoUrl(null);
       }
-      setUserDetails(response.data);
-      setProfilePhotoPreview(null);
     } catch (error) {
       console.error(error);
     }
   };
     
-    if (!user || !userDetails) {
+  if (userDetailsLoading) {
     return <div>Loading...</div>;
-
-    }
+  }
     
     return (
-    <div>
-    <div className="user-details">
-    <div className="profile-photo-section">
-      {profilePhotoUrl && <img src={profilePhotoUrl} alt="Profile photo" />}
-      <input type="file" accept="image/*" onChange={handleProfilePhotoChange} />
-    </div>
-      
       <div>
-      {profilePhotoFile &&
-        <>
-          <button onClick={handleProfilePhotoAdd}>Add Profile Photo</button>
-          <button onClick={() => setProfilePhotoFile(null)}>Cancel</button>
-        </>
-      }
-      {profilePhotoPreview && !profilePhotoFile &&
-        <>
-          <button onClick={() => setProfilePhotoFile(profilePhotoFile => null)}>Edit Profile Photo</button>
-          <button onClick={handleProfilePhotoDelete}>Delete Profile Photo</button>
-        </>
-      }
-      </div>
+      <div className="user-details">
+        <div className="profile-photo-section">
+          {profilePhotoUrl && <img src={profilePhotoUrl} alt="Profile photo" />}
+          <input type="file" accept="image/*" onChange={handleProfilePhotoChange} />
+        </div>
+
+        <div>
+          {profilePhotoFile && (
+            <>
+              <button onClick={handleProfilePhotoAdd}>Add Profile Photo</button>
+              <button onClick={() => setProfilePhotoFile(null)}>Cancel</button>
+            </>
+          )}
+          {profilePhotoUrl && !profilePhotoFile && (
+            <>
+              <button onClick={handleProfilePhotoDelete}>Delete Profile Photo</button>
+            </>
+          )}
+        </div>
          
 
     <div>

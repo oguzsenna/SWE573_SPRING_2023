@@ -10,3 +10,12 @@
   .create-story-map {
     flex: 1;
   }
+
+ 
+  .custom-input {
+    width: 2000px; /* adjust the width as needed */
+    height: 50px; /* adjust the height as needed */
+    resize: both; /* allow both horizontal and vertical resizing */
+    overflow: auto; /* add scrollbars if the content overflows */
+  }
+  

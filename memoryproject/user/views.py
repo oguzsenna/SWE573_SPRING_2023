@@ -41,7 +41,7 @@ class UsernamesByIDsView(APIView):
 
 class UserPhotoView(APIView):
 
-    def get(self, request, user_id):
+    def get(self, request, user_id=None):
         
         #user_id = auth_check(request)
         if user_id:
@@ -50,6 +50,12 @@ class UserPhotoView(APIView):
             cookie_value = request.COOKIES['refreshToken']
             user_id = decode_refresh_token(cookie_value)
             user = get_object_or_404(User, pk=user_id)
+
+        
+        if not user.profile_photo or not user.profile_photo.name:
+            return Response({'error': 'Profile photo does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+   
 
         serializer = UserPhotoSerializer(user)
 
@@ -71,7 +77,7 @@ class UserPhotoView(APIView):
         if not isinstance(request.FILES.get('profile_photo'), InMemoryUploadedFile):
             return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = UserPhotoSerializer(user, data={user.profile_photo: request.FILES['profile_photo']})
+        serializer = UserPhotoSerializer(user, data= {'profile_photo': request.FILES['profile_photo']}) # type: ignore
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -89,7 +95,7 @@ class UserPhotoView(APIView):
             # Delete the file from the storage
             storage.delete(user.profile_photo.name)
             # Update the user model to remove the profile photo
-            user.profile_photo = None
+            user.profile_photo = None # type: ignore
             user.save()
             return Response({'success': 'Profile photo deleted'}, status=status.HTTP_200_OK)
         else:
@@ -426,10 +432,14 @@ class AuthorStoriesAPIView(APIView):
 class CommentAPIView(APIView):
     def post(self, request, story_id):
 
-        user= authorization_checker(request)
+        cookie_value = request.COOKIES['refreshToken']
+        user_id = decode_refresh_token(cookie_value)
+        user = User.objects.filter(pk=user_id).first()
+
         request_data = json.loads(request.body)
-        request_data['author'] = user
+        request_data['author'] = user.id # type: ignore
         request_data['story'] = story_id
+        print(request_data)
         serializer = CommentSerializer(data=request_data)
         
 

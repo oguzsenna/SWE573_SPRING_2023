@@ -236,20 +236,20 @@ function CreateStory() {
             <form onSubmit={handleSubmit}>
             <label>
               Title:
-              <input type="text" value={title} onChange={(event) => setTitle(event.target.value)} />
+              <input type="text" className="custom-input" value={title} onChange={(event) => setTitle(event.target.value)} />
             </label>
             <br />
             <label>
               Content:
-              <textarea value={content} onChange={(event) => setContent(event.target.value)}></textarea>
+              <textarea value={content}  className="custom-input" onChange={(event) => setContent(event.target.value)}></textarea>
             </label>
             <br />
             <label>
               Story tags (comma-separated):
-              <input type="text" value={storyTags} onChange={(event) => setStoryTags(event.target.value)} />
+              <input type="text" className="custom-input" value={storyTags} onChange={(event) => setStoryTags(event.target.value)} />
             </label>
             <br />
-            <div className="form-group">
+            <div className={"form-group"}>
               <label>Locations:</label>
               <Autocomplete
                 onLoad={(autocomplete) => {
@@ -257,7 +257,7 @@ function CreateStory() {
                 }}
                 onPlaceChanged={handleLocationSelect}
               >
-                <input type="text" className="form-control" />
+                <input type="text" className="form-control custom-input" />
               </Autocomplete>
               <ul>
                 {locations.map((loc, index) => (

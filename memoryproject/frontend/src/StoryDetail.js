@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { GoogleMap, LoadScriptNext, Marker } from '@react-google-maps/api';
 import { Link } from 'react-router-dom';
+import CommentSection from './CommentSection.js';
+
 
 
 
@@ -81,6 +83,17 @@ function StoryDetail() {
     }
   }
 
+  async function fetchComments() {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/stories/${story_id}/comments/`);
+      if (response.status === 200) {
+        fetchComments(response.data); 
+      }
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  }
+
 
 
   // Calculate the average latitude and longitude to find the center of the map
@@ -121,16 +134,15 @@ function StoryDetail() {
             ))}
           </ul>
           <div style={containerStyle}>
-            <LoadScriptNext googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
               <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={center}
-                zoom={12}
+                zoom={10}
               >
                 <StoryMarkers locations={story.locations} />
 
               </GoogleMap>
-            </LoadScriptNext>
+            
           </div>
           <div className="like-container">
             <button className="like-button" onClick={toggleLike}>
@@ -141,6 +153,8 @@ function StoryDetail() {
           </div>
         </>
       )}
+      <CommentSection story_id={story_id} />
+
       <Link to="/homepage">Go back</Link> 
 
     </div>
