@@ -11,6 +11,7 @@ import ProfilePage from './ProfilePage';
 import StoryDetail from './StoryDetail';
 import PublicProfilePage from './PublicProfilePage';
 import UserSearch from './UserSearch';
+import axios from 'axios';
 
 
 
@@ -18,11 +19,22 @@ import UserSearch from './UserSearch';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem('user');
-    if (loggedInUser) {
-      setIsLoggedIn(true);
+  const fetchUserDetails = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/user', { withCredentials: true });
+      if (response && response.data) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    } catch (error) {
+      console.log(error);
+      setIsLoggedIn(false);
     }
+  };
+
+  useEffect(() => {
+    fetchUserDetails();
   }, []);
 
   return (
@@ -54,11 +66,12 @@ function App() {
               <>
                 <Route index path="/" element={
                 <div className="memories-container">
+                  <h1>DONT REFRESH THE PAGE IT DESTROYS ITSELF !!!!</h1>
                   <img src="https://static.vecteezy.com/system/resources/previews/004/264/987/original/the-best-memories-modern-calligraphy-inscription-wall-art-decor-design-wedding-photo-album-vector.jpg" alt="Memories" style={{ width: '1000px', height: 'auto'}} />
                 </div>
               } />
                 <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
+                <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)}/>} />
               </>
             )}
             {isLoggedIn && (
