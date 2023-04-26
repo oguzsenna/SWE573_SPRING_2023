@@ -34,7 +34,9 @@ function ProfilePage() {
   const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
   const [userLoading, setUserLoading] = useState(true);
   const [userDetailsLoading, setUserDetailsLoading] = useState(true);
-
+  const [editingBiography, setEditingBiography] = useState(false);
+  const [newBiography, setNewBiography] = useState('');
+  
 
 
   useEffect(() => {
@@ -205,6 +207,26 @@ function ProfilePage() {
       console.error(error);
     }
   };
+
+
+  const editBiography = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put('http://localhost:8000/api/biography', { biography: newBiography }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+  
+      if (response.status === 200) {
+        setUserDetails(response.data);
+        setEditingBiography(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
     
   if (userDetailsLoading) {
     return <div>Loading...</div>;
@@ -246,7 +268,27 @@ function ProfilePage() {
 
       <div className="biography-section">
         <h3>Biography</h3>
-        <p>{userDetails.biography}</p>
+        {!editingBiography && <p>{userDetails.biography}</p>}
+        {editingBiography && (
+          <textarea
+            value={newBiography}
+            onChange={e => setNewBiography(e.target.value)}
+            rows={5}
+            cols={50}
+          />
+        )}
+        {!editingBiography && (
+          <button onClick={() => {
+            setEditingBiography(true);
+            setNewBiography(userDetails.biography || '');
+          }}>Edit Biography</button>
+        )}
+        {editingBiography && (
+          <>
+            <button onClick={editBiography}>Save</button>
+            <button onClick={() => setEditingBiography(false)}>Cancel</button>
+          </>
+        )}
       </div>
     
     </div>

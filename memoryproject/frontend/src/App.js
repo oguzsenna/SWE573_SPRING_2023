@@ -66,7 +66,6 @@ function App() {
               <>
                 <Route index path="/" element={
                 <div className="memories-container">
-                  <h1>DONT REFRESH THE PAGE IT DESTROYS ITSELF !!!!</h1>
                   <img src="https://static.vecteezy.com/system/resources/previews/004/264/987/original/the-best-memories-modern-calligraphy-inscription-wall-art-decor-design-wedding-photo-album-vector.jpg" alt="Memories" style={{ width: '1000px', height: 'auto'}} />
                 </div>
               } />

@@ -21,6 +21,13 @@ from django.db.models import Q
 
 
 
+## Use these for auth problems on views
+##cookie_value = request.COOKIES['refreshToken']
+##user_id = decode_refresh_token(cookie_value)
+##user = get_object_or_404(User, pk=user_id)
+
+
+
 
 
 # Create your views here.
@@ -284,8 +291,9 @@ class UserBiographyAPIView(APIView):
     serializer_class = UserSerializer
 
     def post(self, request, *args, **kwargs):
-        user_id = authorization_checker(request)
-        user = get_object_or_404(User, id=user_id)
+        cookie_value = request.COOKIES['refreshToken']
+        user_id = decode_refresh_token(cookie_value)
+        user = get_object_or_404(User, pk=user_id)
         if user.biography:
             return Response({'error': 'Biography already exists'}, status=status.HTTP_400_BAD_REQUEST)
         if 'biography' in request.data:
@@ -296,8 +304,9 @@ class UserBiographyAPIView(APIView):
         return Response({'error': 'Biography not provided'}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, *args, **kwargs):
-        user_id = authorization_checker(request)
-        user = get_object_or_404(User, id=user_id)
+        cookie_value = request.COOKIES['refreshToken']
+        user_id = decode_refresh_token(cookie_value)
+        user = get_object_or_404(User, pk=user_id)
         if 'biography' in request.data:
             user.biography = request.data['biography']
             user.save()
