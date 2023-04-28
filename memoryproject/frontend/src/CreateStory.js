@@ -31,6 +31,31 @@ function CreateStory() {
   const [end_date, setEndDate] = useState(null);
   const navigate = useNavigate();
 
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link", "image", "video"]
+    ]
+  };
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "video"
+  ];
+
+
   useEffect(() => {
     setSelectedSeason(null);
     setDate(null);
@@ -275,6 +300,8 @@ function CreateStory() {
             <br />
             <label>Content:</label>
             <ReactQuill
+              modules= {modules}
+              formats={formats}
               value={content}
               className="custom-input"
               onChange={setContent}
