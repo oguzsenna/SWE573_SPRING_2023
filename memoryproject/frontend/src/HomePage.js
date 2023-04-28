@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useNavigate, navigate } from 'react-router-dom';
+import './HomePage.css';
+
 
 
 function Pagination({ pageCount, currentPage, onPageChange }) {
@@ -76,7 +78,6 @@ function HomePage() {
             <Link to={`/stories/details/${story.id}`}>{story.title}</Link>
           </h2>
           <p>Author: <Link to={`/users/${story.author_username}`}>{story.author_username}</Link></p>
-          {/* display other fields as needed */}
         </div>
       ))}
       <Pagination

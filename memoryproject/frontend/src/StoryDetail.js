@@ -113,9 +113,12 @@ function StoryDetail() {
     <div>
 
       <h2>{story.title}</h2>
-      <p>Author: {story.author}</p>
+      <p>Author: {story.author_username}</p>
             
-      {story.content && <p>Content: {story.content}</p>}
+      {story.content && <div
+              className="story-content"
+              dangerouslySetInnerHTML={{ __html: story.content }}
+            />}
       {story.story_tags.length > 0 && <p>Story Tags: {story.story_tags.join(', ')}</p>}
       {story.date && <p>Date: {story.date}</p>}
       {story.season && <p>Season: {story.season}</p>}

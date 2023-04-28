@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { GoogleMap, LoadScript, Autocomplete, Marker } from '@react-google-maps/api';
-import { LoadScriptNext } from '@react-google-maps/api';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { useNavigate } from 'react-router-dom';
+
 
 
 
@@ -26,6 +29,8 @@ function CreateStory() {
   const [end_year, setEndYear] = useState(null);
   const [start_date, setStartDate] = useState(null);
   const [end_date, setEndDate] = useState(null);
+  const navigate = useNavigate();
+
 
   useEffect(()=>{
     setSelectedSeason(null);
@@ -74,6 +79,8 @@ function CreateStory() {
           }
         );
         console.log("Form submitted, response:", response);
+        navigate(`/stories/details/${response.data.id}`);
+
   
         setTitle('');
         setContent('');
@@ -236,17 +243,17 @@ function CreateStory() {
             <form onSubmit={handleSubmit}>
             <label>
               Title:
-              <input type="text" className="custom-input" value={title} onChange={(event) => setTitle(event.target.value)} />
+              <input type="text" value={title} onChange={(event) => setTitle(event.target.value)} />
             </label>
             <br />
             <label>
               Content:
-              <textarea value={content}  className="custom-input" onChange={(event) => setContent(event.target.value)}></textarea>
             </label>
+              <ReactQuill value={content} className = "custom-input" onChange={setContent}/>
             <br />
             <label>
               Story tags (comma-separated):
-              <input type="text" className="custom-input" value={storyTags} onChange={(event) => setStoryTags(event.target.value)} />
+              <input type="text" value={storyTags} onChange={(event) => setStoryTags(event.target.value)} />
             </label>
             <br />
             <div className={"form-group"}>
@@ -257,7 +264,7 @@ function CreateStory() {
                 }}
                 onPlaceChanged={handleLocationSelect}
               >
-                <input type="text" className="form-control custom-input" />
+                <input type="text" className="form-control" />
               </Autocomplete>
               <ul>
                 {locations.map((loc, index) => (
