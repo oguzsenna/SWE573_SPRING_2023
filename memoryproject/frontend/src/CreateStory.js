@@ -1,23 +1,23 @@
-import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
-import { GoogleMap, LoadScript, Autocomplete, Marker } from '@react-google-maps/api';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import { useNavigate } from 'react-router-dom';
-
-
-
+import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
+import {
+  GoogleMap,
+  LoadScript,
+  Autocomplete,
+  Marker,
+} from "@react-google-maps/api";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { useNavigate } from "react-router-dom";
 
 //css files
-import 'react-datepicker/dist/react-datepicker.css';
-import './story.css';
-
-
+import "react-datepicker/dist/react-datepicker.css";
+import "./story.css";
 
 function CreateStory() {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [storyTags, setStoryTags] = useState('');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [storyTags, setStoryTags] = useState("");
   const [dateFilter, setDateFilter] = useState(null);
   const [locations, setLocations] = useState([]);
   const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
@@ -31,15 +31,14 @@ function CreateStory() {
   const [end_date, setEndDate] = useState(null);
   const navigate = useNavigate();
 
-
-  useEffect(()=>{
+  useEffect(() => {
     setSelectedSeason(null);
     setDate(null);
     setStartDate(null);
     setEndDate(null);
     setStartYear(null);
     setEndYear(null);
-}, [dateFilter])
+  }, [dateFilter]);
 
   const handleDateFilterChange = (event) => {
     setDateFilter(event.target.value);
@@ -50,16 +49,16 @@ function CreateStory() {
     setSelectedSeason(event.target.value);
     console.log(event.target.value);
   };
- 
+
   const handleSubmit = (event) => {
     event.preventDefault();
-  
+
     const submitStory = async () => {
       try {
         console.log("Submitting the form");
-        const response = await axios.post("http://localhost:8000/api/create_story",
+        const response = await axios.post(
+          "http://localhost:8000/api/create_story",
           {
-            
             title,
             content,
             story_tags: storyTags
@@ -81,21 +80,19 @@ function CreateStory() {
         console.log("Form submitted, response:", response);
         navigate(`/stories/details/${response.data.id}`);
 
-  
-        setTitle('');
-        setContent('');
-        setStoryTags('');
+        setTitle("");
+        setContent("");
+        setStoryTags("");
         setLocations([]);
         setDateFilter(null);
       } catch (error) {
         console.error("Error submitting the form:", error);
-      
       }
     };
-  
+
     submitStory();
   };
-  
+
   const handleLocationSelect = () => {
     const place = autocompleteRef.current.getPlace();
     const locationData = {
@@ -107,31 +104,32 @@ function CreateStory() {
   };
 
   const handleLocationChange = (e) => {
-    const locationData = e.target.value.split(';').map(loc => {
-      const json = loc.trim().replace(/^{/, '').replace(/}$/, '');
-      const {name, latitude, longitude} = JSON.parse(`{${json}}`);
+    const locationData = e.target.value.split(";").map((loc) => {
+      const json = loc.trim().replace(/^{/, "").replace(/}$/, "");
+      const { name, latitude, longitude } = JSON.parse(`{${json}}`);
       return {
         name: name,
         latitude: parseFloat(latitude),
-        longitude: parseFloat(longitude)
+        longitude: parseFloat(longitude),
       };
     });
     setLocations(locationData);
   };
-
 
   const handleMapClick = async (e) => {
     const { latLng } = e;
     const lat = latLng.lat();
     const lng = latLng.lng();
     try {
-      const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`);
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`
+      );
       const { results } = response.data;
       if (results.length > 0) {
         const locationData = {
           name: results[0].formatted_address,
           latitude: Number(lat.toFixed(6)),
-          longitude: Number(lng.toFixed(6))
+          longitude: Number(lng.toFixed(6)),
         };
         setLocations([...locations, locationData]);
       }
@@ -162,68 +160,94 @@ function CreateStory() {
   const handleClearFilter = () => {
     setDateFilter(null);
   };
-  
+
   const renderDateFilter = () => {
-    console.log('Rendering date filter:', dateFilter);
-  
+    console.log("Rendering date filter:", dateFilter);
+
     switch (dateFilter) {
-      case 'season':
-      return (
-        <div>
-          <select value={selectedSeason} style={{ display: 'inline-block', marginRight: '10px' }} onChange={handleSeasonChange}>
-            <option value="">Select a season</option>
-            <option value="Winter">Winter</option>
-            <option value="Spring">Spring</option>
-            <option value="Summer">Summer</option>
-            <option value="Fall">Fall</option>
-          </select>
-          <button type="button" onClick={handleClearFilter}>Clear filter</button>
-        </div>
-      );
-      case 'decade':
-  return (
-    <>
-      <input
-        type="text"
-        placeholder="Start year"
-        value={start_year}
-        onChange={(event) => setStartYear(event.target.value)}
-      />
-      {" - "}
-      <input
-        type="text"
-        placeholder="End year"
-        value={end_year}
-        onChange={(event) => setEndYear(event.target.value)}
-      />
-      <button type="button" onClick={handleClearFilter}>Clear filter</button>
-    </>
-  );
+      case "season":
+        return (
+          <div>
+            <select
+              value={selectedSeason}
+              style={{ display: "inline-block", marginRight: "10px" }}
+              onChange={handleSeasonChange}
+            >
+              <option value="">Select a season</option>
+              <option value="Winter">Winter</option>
+              <option value="Spring">Spring</option>
+              <option value="Summer">Summer</option>
+              <option value="Fall">Fall</option>
+            </select>
+            <button type="button" onClick={handleClearFilter}>
+              Clear filter
+            </button>
+          </div>
+        );
+      case "decade":
+        return (
+          <>
+            <input
+              type="text"
+              placeholder="Start year"
+              value={start_year}
+              onChange={(event) => setStartYear(event.target.value)}
+            />
+            {" - "}
+            <input
+              type="text"
+              placeholder="End year"
+              value={end_year}
+              onChange={(event) => setEndYear(event.target.value)}
+            />
+            <button type="button" onClick={handleClearFilter}>
+              Clear filter
+            </button>
+          </>
+        );
 
+      case "interval":
+        return (
+          <div>
+            <input
+              type="date"
+              className="form-control"
+              onChange={(date) => setStartDate(date.target.value)}
+            />
+            {" - "}
+            <input
+              type="date"
+              className="form-control"
+              onChange={(date) => setEndDate(date.target.value)}
+            />
+            <button type="button" onClick={handleClearFilter}>
+              Clear filter
+            </button>
+          </div>
+        );
 
-      case 'interval':
-          return (
-            <div>
-              <input type= "date" className="form-control" onChange={(date) => setStartDate(date.target.value)} />
-              {' - '}
-              <input type= "date" className="form-control" onChange={(date) => setEndDate(date.target.value)} />
-              <button type="button" onClick={handleClearFilter}>Clear filter</button>
+      case "particular":
+        return (
+          <form>
+            <div className="form-group">
+              <input
+                type="date"
+                className="form-control"
+                onChange={(date) => setDate(date.target.value)}
+              />
             </div>
-          );
-
-        case 'particular':
-          return (
-            <form>
-              <div className="form-group">
-                <input type= "date" className="form-control" onChange={(date) => setDate(date.target.value)} />
-                
-              </div> 
-              <button type="button" onClick={handleClearFilter}>Clear filter</button>
-            </form>
-          );
+            <button type="button" onClick={handleClearFilter}>
+              Clear filter
+            </button>
+          </form>
+        );
       default:
         return (
-          <select value={dateFilter} style={{ display: 'inline-block', marginRight: '10px' }} onChange={handleDateFilterChange}>
+          <select
+            value={dateFilter}
+            style={{ display: "inline-block", marginRight: "10px" }}
+            onChange={handleDateFilterChange}
+          >
             <option value="">Select a date filter</option>
             <option value="season">Season</option>
             <option value="decade">Decade</option>
@@ -233,27 +257,36 @@ function CreateStory() {
         );
     }
   };
-  
 
   return (
-      <div>
-        <h1 className='big-heading'>Create Story</h1>
-        <div className="create-story-container">
-          <div className="create-story-form">
-            <form onSubmit={handleSubmit}>
+    <div>
+      <h1 className="big-heading">Create Story</h1>
+      <div className="create-story-container">
+        <div className="create-story-form">
+          <form onSubmit={handleSubmit}>
             <label>
               Title:
-              <input type="text" value={title} onChange={(event) => setTitle(event.target.value)} />
+              <input
+                type="text"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+              />
             </label>
             <br />
-            <label>
-              Content:
-            </label>
-              <ReactQuill value={content} className = "custom-input" onChange={setContent}/>
+            <label>Content:</label>
+            <ReactQuill
+              value={content}
+              className="custom-input"
+              onChange={setContent}
+            />
             <br />
             <label>
               Story tags (comma-separated):
-              <input type="text" value={storyTags} onChange={(event) => setStoryTags(event.target.value)} />
+              <input
+                type="text"
+                value={storyTags}
+                onChange={(event) => setStoryTags(event.target.value)}
+              />
             </label>
             <br />
             <div className={"form-group"}>
@@ -270,58 +303,61 @@ function CreateStory() {
                 {locations.map((loc, index) => (
                   <div key={index}>
                     <li>{loc.name || `${loc.latitude}, ${loc.longitude}`}</li>
-                    <button type="button" onClick={() => handleLocationRemove(index)}>Remove</button>
+                    <button
+                      type="button"
+                      onClick={() => handleLocationRemove(index)}
+                    >
+                      Remove
+                    </button>
                   </div>
                 ))}
               </ul>
             </div>
             <br />
-            
+
             <label>
               Date Filter:
               {renderDateFilter()}
             </label>
-        
+
             <br />
             <br />
 
             <button type="submit">Create Story</button>
-            </form>
+          </form>
           <br />
         </div>
         <div className="create-story-map">
-        <GoogleMap
-          mapContainerStyle={{ height: '400px', width: '400px' }}
-          center={mapCenter}
-          zoom={1}
-          onClick={handleMapClick}
-          onLoad={handleMapLoad}
-        >
-          {searchBox &&
-            <Autocomplete
-              bounds={null}
-              onLoad={() => console.log('autocomplete loaded')}
-              onPlaceChanged={handlePlacesChanged}
-            >
-              <input type="text" placeholder="Search on map" />
-            </Autocomplete>
-          }
-          {locations.map((loc, index) => (
-            <Marker
-              key={index}
-              position={{ lat: loc.latitude, lng: loc.longitude }}
-              onClick={() => {
-                // handle marker click here
-              }}
-            />
-          ))}
-        </GoogleMap>
+          <GoogleMap
+            mapContainerStyle={{ height: "400px", width: "400px" }}
+            center={mapCenter}
+            zoom={1}
+            onClick={handleMapClick}
+            onLoad={handleMapLoad}
+          >
+            {searchBox && (
+              <Autocomplete
+                bounds={null}
+                onLoad={() => console.log("autocomplete loaded")}
+                onPlaceChanged={handlePlacesChanged}
+              >
+                <input type="text" placeholder="Search on map" />
+              </Autocomplete>
+            )}
+            {locations.map((loc, index) => (
+              <Marker
+                key={index}
+                position={{ lat: loc.latitude, lng: loc.longitude }}
+                onClick={() => {
+                  // handle marker click here
+                }}
+              />
+            ))}
+          </GoogleMap>
+        </div>
       </div>
     </div>
-  </div>
   );
 }
 
 export default CreateStory;
-
-
