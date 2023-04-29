@@ -4,6 +4,8 @@ from django.contrib.postgres.fields import ArrayField
 from django.db.models import Value
 from datetime import datetime
 from django.utils import timezone
+from ckeditor.fields import RichTextField
+
 
 
 
@@ -31,7 +33,7 @@ class Location(models.Model):
 class Story(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255, null=True)
-    content = models.TextField(null=True)
+    content = RichTextField(null=True)
     story_tags = ArrayField(models.CharField(max_length=255, null=True), default=list)
     date = models.DateField(null= True)
     likes = models.ManyToManyField(User, related_name='liked_stories', blank=True)

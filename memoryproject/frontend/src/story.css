@@ -10,3 +10,25 @@
   .create-story-map {
     flex: 1;
   }
+
+ 
+  .custom-input {
+    width: 500px; /* adjust the width as needed */
+    height: 200px; /* adjust the height as needed */
+    resize: both; /* allow both horizontal and vertical resizing */
+    overflow: auto; /* add scrollbars if the content overflows */
+  }
+  
+  .ql-editor {
+    background-color: white;
+  }
+
+  .create-story-button {
+    background-color: #363d51;
+    color: white;
+    border-radius: 6px;
+    width: 179px;
+    height: 46px;
+    left: 0px;
+    top: 0px;
+  }

@@ -1,0 +1,20 @@
+.username {
+  text-decoration: none;
+  color: inherit;
+}
+
+.username:hover {
+  cursor: pointer;
+  color: #007bff; /* Change this color to your preferred hover color */
+  transition: 0.3s;
+}
+
+.button {
+  background-color: #363d51;
+  color: white;
+  border-radius: 6px;
+  width: 100px;
+  height: 46px;
+  left: 0px;
+  top: 0px;
+}

@@ -46,6 +46,7 @@
 .navbar-nav {
   display: flex;
   justify-content: center;
+  align-content: center;
 }
 
 .nav-link {
@@ -73,7 +74,7 @@
 
 
 .button {
-  /* Button styles */
+  
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -85,7 +86,7 @@
   height: 46px;
   left: 0px;
   top: 0px;
-  background: #B02817;
+  background: #363d51;
   /* Shadow/XSM */
   box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.04);
   border-radius: 6px;
@@ -106,5 +107,13 @@ border-radius: 2px;
 
 select[name="date_filter"] {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+body {
+  background-image: url('https://media.tenor.com/NH_dhrT0B6MAAAAC/white-aesthetic.gif');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
 }

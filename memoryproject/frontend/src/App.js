@@ -11,6 +11,8 @@ import ProfilePage from './ProfilePage';
 import StoryDetail from './StoryDetail';
 import PublicProfilePage from './PublicProfilePage';
 import UserSearch from './UserSearch';
+import StorySearch from './StorySearch';
+import axios from 'axios';
 
 
 
@@ -18,11 +20,22 @@ import UserSearch from './UserSearch';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem('user');
-    if (loggedInUser) {
-      setIsLoggedIn(true);
+  const fetchUserDetails = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/user', { withCredentials: true });
+      if (response && response.data) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    } catch (error) {
+      console.log(error);
+      setIsLoggedIn(false);
     }
+  };
+
+  useEffect(() => {
+    fetchUserDetails();
   }, []);
 
   return (
@@ -42,6 +55,7 @@ function App() {
                   <Link to="/homepage" className="nav-item nav-link button">Home Page</Link>
                   <Link to="/profile_page" className="nav-item nav-link button">Profile Page</Link>
                   <Link to="/create_story" className="nav-item nav-link button">Create Story</Link>
+                  <Link to="/StorySearch" className="nav-item nav-link button">Search Stories</Link> 
                   <Link to="/logout" className="nav-item nav-link button">Logout</Link>
                 </>
               )}
@@ -54,11 +68,20 @@ function App() {
               <>
                 <Route index path="/" element={
                 <div className="memories-container">
-                  <img src="https://static.vecteezy.com/system/resources/previews/004/264/987/original/the-best-memories-modern-calligraphy-inscription-wall-art-decor-design-wedding-photo-album-vector.jpg" alt="Memories" style={{ width: '1000px', height: 'auto'}} />
-                </div>
+                <img
+                  src= "https://i.imgur.com/EaGTMJa.png"
+                  alt="Memories"
+                  style={{
+                    width: '1000px',
+                    height: 'auto',
+                    //mixBlendMode: 'multiply',
+                    //backgroundColor: '#FFFFFF'
+                  }}
+                />
+              </div>
               } />
                 <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
+                <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)}/>} />
               </>
             )}
             {isLoggedIn && (
@@ -70,6 +93,7 @@ function App() {
                 <Route path="/stories/details/:story_id" element={<StoryDetail />} />
                 <Route path="/users/:username" element={<PublicProfilePage /> } />
                 <Route path="/UserSearch/:searchQuery" element={<UserSearch />} />
+                <Route path="/StorySearch" element={<StorySearch />} />
 
 
               </>

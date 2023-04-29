@@ -1,10 +1,14 @@
+import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './RegisterForm.css'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
 function Register() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -22,11 +26,14 @@ function Register() {
   };
 
   const handleSubmit = (event) => {
+    
     event.preventDefault();
     axios.post('http://localhost:8000/api/register/', formData)
       .then(response => {
         console.log(response.data);
         toast.success('User created successfully');
+        navigate(`/Login`);
+
         setFormData({
           username: '',
           email: '',
