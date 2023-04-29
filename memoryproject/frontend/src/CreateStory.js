@@ -66,8 +66,11 @@ function CreateStory() {
   }, [dateFilter]);
 
   const handleDateFilterChange = (event) => {
-    setDateFilter(event.target.value);
-    console.log(event.target.value);
+    if (event.target.value === "season" || event.target.value === "year") {
+      setDateFilter("season-year");
+    } else {
+      setDateFilter(event.target.value);
+    }
   };
 
   const handleSeasonChange = (event) => {
@@ -190,7 +193,7 @@ function CreateStory() {
     console.log("Rendering date filter:", dateFilter);
 
     switch (dateFilter) {
-      case "season":
+      case "season-year":
         return (
           <div>
             <select
@@ -204,17 +207,12 @@ function CreateStory() {
               <option value="Summer">Summer</option>
               <option value="Fall">Fall</option>
             </select>
-            <button type="button" onClick={handleClearFilter}>
-              Clear filter
-            </button>
-          </div>
-        );
-      case "decade":
-        return (
-          <>
+            <br/>
+            <br/>
+            
             <input
               type="text"
-              placeholder="Start year"
+              placeholder="Start Year"
               value={start_year}
               onChange={(event) => setStartYear(event.target.value)}
             />
@@ -224,11 +222,11 @@ function CreateStory() {
               placeholder="End year"
               value={end_year}
               onChange={(event) => setEndYear(event.target.value)}
-            />
+            /> 
             <button type="button" onClick={handleClearFilter}>
               Clear filter
             </button>
-          </>
+          </div>
         );
 
       case "interval":
@@ -238,7 +236,7 @@ function CreateStory() {
               type="date"
               className="form-control"
               onChange={(date) => setStartDate(date.target.value)}
-            />
+            /> 
             {" - "}
             <input
               type="date"
@@ -268,17 +266,18 @@ function CreateStory() {
         );
       default:
         return (
-          <select
-            value={dateFilter}
-            style={{ display: "inline-block", marginRight: "10px" }}
-            onChange={handleDateFilterChange}
-          >
-            <option value="">Select a date filter</option>
-            <option value="season">Season</option>
-            <option value="decade">Decade</option>
-            <option value="interval">Date Interval</option>
-            <option value="particular">Particular Date</option>
-          </select>
+          <div>
+            <select
+              value={dateFilter}
+              style={{ display: "inline-block", marginRight: "10px" }}
+              onChange={handleDateFilterChange}
+            >
+              <option value="">Select a date filter</option>
+              <option value="season">Season and Year</option>
+              <option value="interval">Date Interval</option>
+              <option value="particular">Particular Date</option>
+            </select>
+          </div>
         );
     }
   };
@@ -305,6 +304,7 @@ function CreateStory() {
               value={content}
               className="custom-input"
               onChange={setContent}
+              
             />
             <br />
             <label>

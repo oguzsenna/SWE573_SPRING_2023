@@ -18,10 +18,13 @@ from django.core.files.storage import FileSystemStorage
 import os
 from django.http import HttpResponse
 from django.db.models import Q
+from django.utils import timezone
+from math import ceil,cos, radians
+from datetime import datetime, timedelta
 
 
 
-## Use these for auth problems on views
+## Use these for auth problems on
 ##cookie_value = request.COOKIES['refreshToken']
 ##user_id = decode_refresh_token(cookie_value)
 ##user = get_object_or_404(User, pk=user_id)
@@ -469,6 +472,7 @@ class StoryCommentListAPIView(APIView):
 
 class SearchUserView(APIView):
 
+
     
 
     def get(self, request, *args, **kwargs):
@@ -486,3 +490,72 @@ class SearchUserView(APIView):
         return Response({
             "users": users_serializer.data,
         }, status=status.HTTP_200_OK)
+    
+
+class SearchStoryView(APIView):
+    def get(self, request, *args, **kwargs):
+        cookie_value = request.COOKIES['refreshToken']
+        user_id = decode_refresh_token(cookie_value)
+        user = get_object_or_404(User, pk=user_id)
+
+        title_search = request.query_params.get('title', '')
+        author_search = request.query_params.get('author', '')
+        time_type = request.query_params.get('time_type', '')
+        time_value = request.query_params.get('time_value', '')
+        location = request.query_params.get('location', '')
+
+        query_filter = Q()
+        if title_search:
+            query_filter &= Q(title__icontains=title_search)
+        if author_search:
+            query_filter &= Q(author__username__icontains=author_search)
+        print(time_type)
+        print(time_value)
+        if time_type and time_value:
+
+            time_value_dict = json.loads(time_value)
+
+            if time_type == 'season':
+                season_name = time_value_dict["seasonName"]
+                query_filter &= Q(season__icontains=season_name)  
+
+            elif time_type == 'decade':
+                year = time_value_dict["year"]
+                query_filter &= Q(year__gte=year)
+
+            elif time_type == 'normal_date':
+                given_date = datetime.strptime(time_value["date"], "%Y-%m-%d").date()
+
+                # Calculate the date range
+                start_date = given_date - timedelta(days=2)
+                end_date = given_date + timedelta(days=2)
+                query_filter &= Q(date__range=(start_date, end_date)) ##I can change the date to get 2 dates for interval on normal_date too
+                #time_value = time_value["date"]
+                ##query_filter &= Q(date=time_value)
+            elif time_type == 'interval_date':
+                query_filter &= Q(
+                    start_date__gte=time_value['startDate'],
+                    end_date__lte=time_value['endDate']
+                )
+            
+            elif time_type == 'seasonAndYear':  
+                season_name = time_value_dict["seasonName"]
+                year = time_value_dict["year"]
+                query_filter &= Q(season__icontains=season_name, start_year__icontains=year)
+
+        if location != "null":
+            location = json.loads(location)
+            lat = location['latitude']
+            lng = location['longitude']
+            radius = 25  # radius set for near search
+
+            query_filter &= Q(
+                locations__latitude__range=(lat - radius / 110.574, lat + radius / 110.574),
+                locations__longitude__range=(lng - radius / (111.320 * cos(radians(lat))), lng + radius / (111.320 * cos(radians(lat))))
+            )
+        stories = Story.objects.filter(query_filter)
+        serializer = StorySerializer(stories, many=True)
+
+
+        return Response(serializer.data, status=201)
+

@@ -19,3 +19,6 @@
     overflow: auto; /* add scrollbars if the content overflows */
   }
   
+  .ql-editor {
+    background-color: white;
+  }
