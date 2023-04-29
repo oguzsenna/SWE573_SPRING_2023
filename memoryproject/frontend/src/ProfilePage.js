@@ -256,17 +256,17 @@ function ProfilePage() {
          
 
     <div>
-      <div className="biography-section">
+      <div>
         <h3>Username</h3>
         <p>{userDetails.username}</p>
       </div>
 
-    <div className="biography-section">
+    <div >
         <h3>Email</h3>
         <p>{userDetails.email}</p>
       </div>
 
-      <div className="biography-section">
+      <div className='biography-section' >
         <h3>Biography</h3>
         {!editingBiography && <p>{userDetails.biography}</p>}
         {editingBiography && (

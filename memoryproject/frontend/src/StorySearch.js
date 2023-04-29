@@ -283,8 +283,9 @@ const StorySearch = () => {
               />
             )}
           </GoogleMap>
+          <br/>
         </div>
-        <button type="submit">Search</button>
+        <button className = "button" type="submit">Search</button>
       </form>
       {stories.length > 0 && (
         <>

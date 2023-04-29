@@ -5,10 +5,6 @@ import { useParams } from "react-router-dom";
 import { GoogleMap, LoadScriptNext, Marker } from "@react-google-maps/api";
 import { Link } from "react-router-dom";
 import CommentSection from "./CommentSection.js";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
-import './user-details-profile.css';
 
 
 
@@ -138,7 +134,7 @@ function StoryDetail() {
       {story.end_date && <p>End Date: {story.end_date}</p>}
       {story.locations.length > 0 && (
         <>
-          <p>Locations:</p>
+          <h3>Locations:</h3>
           <ul>
             {story.locations.map((location, index) => (
               <li key={index}>
@@ -157,9 +153,8 @@ function StoryDetail() {
           </div>
           <div className="like-container">
             <button className="like-button" onClick={toggleLike}>
-              <FontAwesomeIcon
-                icon={liked ? faHeartSolid : faHeartRegular} // Use imported icons here
-                className={`fas ${liked ? "fa-heart" : "fa-heart-o"}`}
+              <i
+                className={`fas ${liked ? "fa-heart" : "fa-heart-o"}`} 
                 aria-hidden="true"
               />
               {liked ? " Unlike" : " Like"}

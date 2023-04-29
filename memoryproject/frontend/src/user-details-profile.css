@@ -6,7 +6,7 @@
     padding: 20px;
     margin-bottom: 20px;
     margin-top: 20px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2);
   }
 
   /* Style for the user details section heading */
@@ -25,7 +25,7 @@
   }
 
   .user-stories-heading {
-    background-color: #B02817;
+    background-color: #363d51;
     color:azure;
     border-radius: 5px;
     padding: 10px 20px;
@@ -36,7 +36,7 @@
   
   /* Style for the biography section */
   .biography-section {
-    background-color: #e8e8e8;
+    background-color: #b3bed4;
     border-radius:5px;
     padding: 5px;
     margin-bottom: 10px;

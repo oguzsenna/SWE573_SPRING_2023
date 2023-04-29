@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import './user-details-profile.css';
+
 
 function PublicProfilePage() {
   const [user, setUser] = useState(null);
@@ -69,13 +71,13 @@ function PublicProfilePage() {
     <div>
       <h1>{user.username}'s Stories</h1>
       <button onClick={toggleFollow}>{following ? 'Unfollow' : 'Follow'}</button>
-      <ul>
+      
         {stories.map((story) => (
-          <li key={story.id}>
+          <h2 key={story.id}>
             <Link to={`/stories/details/${story.id}`}>{story.title}</Link>
-          </li>
+          </h2>
         ))}
-      </ul>
+      
     </div>
   );
 }

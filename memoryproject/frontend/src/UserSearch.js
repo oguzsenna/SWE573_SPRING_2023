@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams,useNavigate } from 'react-router-dom';
+import './UserSearch.css';
+
 
 
 function SearchUserResults({  }) {
@@ -45,7 +47,7 @@ function SearchUserResults({  }) {
       ) : (
         results.map(user => (
           <div key={user.username} onClick={() => handleUserClick(user.username)}>
-            <h3>{user.username}</h3>
+            <a className="username" href={`/users/${user.username}`}>{user.username}</a>
           </div>
         ))
       )}

@@ -350,7 +350,7 @@ function CreateStory() {
             <br />
             <br />
 
-            <button type="submit">Create Story</button>
+            <button className="create-story-button" type="submit">Create Story</button>
           </form>
           <br />
         </div>
@@ -376,7 +376,6 @@ function CreateStory() {
                 key={index}
                 position={{ lat: loc.latitude, lng: loc.longitude }}
                 onClick={() => {
-                  // handle marker click here
                 }}
               />
             ))}

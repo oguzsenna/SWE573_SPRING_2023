@@ -22,3 +22,13 @@
   .ql-editor {
     background-color: white;
   }
+
+  .create-story-button {
+    background-color: #363d51;
+    color: white;
+    border-radius: 6px;
+    width: 179px;
+    height: 46px;
+    left: 0px;
+    top: 0px;
+  }
