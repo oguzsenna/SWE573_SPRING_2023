@@ -15,7 +15,7 @@ const StorySearch = () => {
   const [endDate, setEndDate] = useState("");
   const [start_year, setStartYear] = useState(null);
   const [end_year, setEndYear] = useState(null);
-
+  const [radius, setRadius] = useState(25);
   const [locationSearch, setLocationSearch] = useState(null);
   const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
   const [markerPosition, setMarkerPosition] = useState(mapCenter);
@@ -52,7 +52,7 @@ const StorySearch = () => {
         timeValueObj = { startDate, endDate };
         break;
       case "seasonAndYear":
-        timeValueObj = { seasonName, year };
+        timeValueObj = { seasonName, start_year, end_year};
         break;
       default:
         break;
@@ -68,6 +68,7 @@ const StorySearch = () => {
             time_type: timeType,
             time_value: JSON.stringify(timeValueObj),
             location: JSON.stringify(locationSearch),
+            radius: radius,
           },
           withCredentials: true,
         }
@@ -160,14 +161,14 @@ const StorySearch = () => {
               onChange={(e) => setSeasonName(e.target.value)}
             />
             <br />
-            <label htmlFor="year">Start Year:</label>
+            <label htmlFor="start_year">Start Year:</label>
             <input
               type="number"
               id="start_year"
               value={start_year}
               onChange={(e) => setStartYear(e.target.value)}
             />
-            <label htmlFor="year">End Year:</label>
+            <label htmlFor="end_year">End Year:</label>
             <input
               type="number"
               id="end_year"
@@ -180,6 +181,12 @@ const StorySearch = () => {
         return null;
     }
   };
+
+  
+
+const handleRadiusChange = (e) => {
+  setRadius(e.target.value);
+};
 
 
 
@@ -284,6 +291,17 @@ const StorySearch = () => {
             )}
           </GoogleMap>
           <br/>
+          <div className="form-group">
+            <label htmlFor="radius">Radius: {radius} km</label>
+            <input
+              type="range"
+              id="radius"
+              min="5"
+              max="100"
+              value={radius}
+              onChange={(e) => setRadius(e.target.value)}
+            />
+          </div>
         </div>
         <button className = "button" type="submit">Search</button>
       </form>
