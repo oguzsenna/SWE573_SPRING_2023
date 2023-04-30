@@ -17,32 +17,35 @@ import axios from 'axios';
 
 
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const fetchUserDetails = async () => {
-    try {
-      const response = await axios.get('http://localhost:8000/api/user', { withCredentials: true });
-      if (response && response.data) {
-        setIsLoggedIn(true);
-      } else {
+  function App() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/user', { withCredentials: true });
+        if (response && response.data) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.log(error);
         setIsLoggedIn(false);
       }
-    } catch (error) {
-      console.log(error);
-      setIsLoggedIn(false);
-    }
-  };
+    };
+  
 
-  useEffect(() => {
-    fetchUserDetails();
-  }, []);
+    useEffect(() => {
+      fetchUserDetails();
+    }, []);
 
   return (
       <Router>
         <div className="container">
           <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="navbar-nav">
+
               {!isLoggedIn && (
                 <>
                   <Link to="/" className="nav-item nav-link button">Entrance</Link>
@@ -63,6 +66,7 @@ function App() {
           </nav>
           <LoadScriptNext googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY} libraries={['places']}>
           <Routes>
+
 
             {!isLoggedIn && (
               <>
@@ -106,5 +110,6 @@ function App() {
      
   );
 }
+
 
 export default App;

@@ -39,3 +39,27 @@
     color: red;
   }
   
+
+  .heart-clicked {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0;
+    margin: 0;
+    outline: none;
+  }
+  
+  @keyframes grow-up {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.3);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  .heart-clicked:active {
+    transform: scale(3.1)
+  }

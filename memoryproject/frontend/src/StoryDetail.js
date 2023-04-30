@@ -8,6 +8,7 @@ import CommentSection from "./CommentSection.js";
 
 
 
+
 const containerStyle = {
   width: "100%",
   height: "400px",
@@ -160,7 +161,7 @@ function StoryDetail() {
               {liked ? " Unlike" : " Like"}
             </button>
             <span className="like-count">
-              {likeCount} {likeCount === 1 ? "Like" : "Likes"}
+            {likeCount} {likeCount === 1 || likeCount === 0 ? "Like" : "Likes"}
             </span>
           </div>
         </>

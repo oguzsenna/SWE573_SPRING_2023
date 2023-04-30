@@ -53,7 +53,7 @@ class UserPhotoView(APIView):
 
     def get(self, request, user_id=None):
         
-        #user_id = auth_check(request)
+        
         if user_id:
             user = get_object_or_404(User, pk=user_id)
         else:
@@ -72,7 +72,6 @@ class UserPhotoView(APIView):
         file_ext = os.path.splitext(user.profile_photo.name)[-1].lower()
         content_type = 'image/jpeg' if file_ext == '.jpg' or file_ext == '.jpeg' else 'image/png'
 
-        # Serve the image file with the proper content type and inline attachment
         response = HttpResponse(user.profile_photo, content_type=content_type)
         response['Content-Disposition'] = f'inline; filename="{user.profile_photo.name}"'
 
@@ -117,19 +116,14 @@ class FollowerStoryView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, to_user_id):
-        # Get the current user based on the authentication token
         current_user = request.user
 
-        # Get the from_user_id from the refresh token (assuming you have implemented this)
         from_user_id = request.auth.user_id
 
-        # Get the followers of the to_user_id
         followers = User.objects.filter(following__to_user_id=to_user_id)
 
-        # Get the stories of the followers
         follower_stories = Story.objects.filter(author_id__in=followers)
 
-        # Filter the stories based on query parameters (if any)
         story_tags = request.query_params.getlist('story_tags', [])
         if story_tags:
             follower_stories = follower_stories.filter(story_tags__name__in=story_tags)
@@ -278,7 +272,6 @@ class LogoutAPIView(APIView):
 class UserAPIView(APIView):
     def get(self, request, user_id=None):
 
-        #user_id = auth_check(request)
         if user_id:
             user = get_object_or_404(User, pk=user_id)
         else:
@@ -503,6 +496,9 @@ class SearchStoryView(APIView):
         time_type = request.query_params.get('time_type', '')
         time_value = request.query_params.get('time_value', '')
         location = request.query_params.get('location', '')
+        radius = float(request.query_params.get('radius', 25))  
+        print(radius)
+
 
         query_filter = Q()
         if title_search:
@@ -514,6 +510,7 @@ class SearchStoryView(APIView):
         if time_type and time_value:
 
             time_value_dict = json.loads(time_value)
+            print(time_value_dict)
 
             if time_type == 'season':
                 season_name = time_value_dict["seasonName"]
@@ -529,7 +526,7 @@ class SearchStoryView(APIView):
                 # Calculate the date range
                 start_date = given_date - timedelta(days=2)
                 end_date = given_date + timedelta(days=2)
-                query_filter &= Q(date__range=(start_date, end_date)) ##I can change the date to get 2 dates for interval on normal_date too
+                query_filter &= Q(date__range=(start_date, end_date)) 
                 #time_value = time_value["date"]
                 ##query_filter &= Q(date=time_value)
             elif time_type == 'interval_date':
@@ -540,14 +537,15 @@ class SearchStoryView(APIView):
             
             elif time_type == 'seasonAndYear':  
                 season_name = time_value_dict["seasonName"]
-                year = time_value_dict["year"]
-                query_filter &= Q(season__icontains=season_name, start_year__icontains=year)
+                start_year= time_value_dict["start_year"]
+                end_year = time_value_dict["end_year"]
+                query_filter &= Q(season__icontains=season_name, start_year__gte=start_year, end_year__lte=end_year)
 
         if location != "null":
             location = json.loads(location)
             lat = location['latitude']
             lng = location['longitude']
-            radius = 25  # radius set for near search
+            #radius = 25  
 
             query_filter &= Q(
                 locations__latitude__range=(lat - radius / 110.574, lat + radius / 110.574),
