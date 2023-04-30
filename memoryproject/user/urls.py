@@ -31,6 +31,8 @@ urlpatterns = [
     path('stories/<str:username>/', GetStoryByUsernameView.as_view(), name='get_story_by_username'),
     path('search_user', SearchUserView.as_view(), name='search'),
     path("search_story", SearchStoryView.as_view(), name="search_story"),
+    path('delete/stories/<int:story_id>/', DeleteStoryView.as_view(), name='delete_story'),
+
 
 
 

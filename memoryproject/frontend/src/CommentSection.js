@@ -63,9 +63,9 @@ function CommentSection({ story_id }) {
       <ul>
         {comments.map((comment, index) => (
           <li>
-          <h4 key={index}>
+          <p key={index}>
             {comment.author}: {comment.content}
-          </h4>
+          </p>
           </li>
         ))}
       </ul>

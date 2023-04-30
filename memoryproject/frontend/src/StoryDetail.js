@@ -116,8 +116,8 @@ function StoryDetail() {
   return (
     <div>
       <h2>{story.title}</h2>
-      <p>Author: {story.author_username}</p>
-
+      <p> <h3>Author:</h3> {story.author_username}</p>
+      <h3>Content</h3>
       {story.content && (
         <div
           className="story-content"
@@ -125,8 +125,9 @@ function StoryDetail() {
         />
       )}
       {story.story_tags.length > 0 && (
-        <p>Story Tags: {story.story_tags.join(", ")}</p>
+        <p><h3>Story Tags:</h3> {story.story_tags.join(", ")}</p>
       )}
+      <br/>
       {story.date && <p>Date: {story.date}</p>}
       {story.season && <p>Season: {story.season}</p>}
       {story.start_year && <p>Start Year: {story.start_year}</p>}
