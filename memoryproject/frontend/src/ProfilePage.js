@@ -203,33 +203,6 @@ function ProfilePage() {
       console.error(error);
     }
   };
-  
-  const handleProfilePhotoEdit = async () => {
-    const formData = new FormData();
-    formData.append("profile_photo", profilePhotoFile);
-
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.put(
-        "http://localhost:8000/api/profile/photo",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-      if (response.status === 200) {
-        setProfilePhotoUrl(URL.createObjectURL(profilePhotoFile));
-      }
-      setUserDetails(response.data);
-      setProfilePhotoFile(null);
-      setProfilePhotoPreview(null);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const handleProfilePhotoDelete = async () => {
     try {
