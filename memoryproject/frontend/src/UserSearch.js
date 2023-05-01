@@ -46,9 +46,15 @@ function SearchUserResults({  }) {
         <p>Loading...</p>
       ) : (
         results.map(user => (
-          <div key={user.username} onClick={() => handleUserClick(user.username)}>
+          <ul>
+              <li>
+            <div key={user.username} onClick={() => handleUserClick(user.username)}>
             <a className="username" href={`/users/${user.username}`}>{user.username}</a>
           </div>
+          </li>
+          </ul>
+          
+          
         ))
       )}
     </div>
