@@ -2,6 +2,8 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
+import mapStyle from './mapStyle.json';
+
 
 const StorySearch = () => {
   const [titleSearch, setTitleSearch] = useState("");
@@ -20,6 +22,7 @@ const StorySearch = () => {
   const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
   const [markerPosition, setMarkerPosition] = useState(mapCenter);
   const autocompleteRef = useRef(null);
+  
 
   const navigate = useNavigate();
 
@@ -52,7 +55,7 @@ const StorySearch = () => {
         timeValueObj = { startDate, endDate };
         break;
       case "seasonAndYear":
-        timeValueObj = { seasonName, start_year, end_year};
+        timeValueObj = { seasonName, start_year, end_year };
         break;
       default:
         break;
@@ -150,7 +153,7 @@ const StorySearch = () => {
           </>
         );
 
-        case "seasonAndYear":
+      case "seasonAndYear":
         return (
           <>
             <label htmlFor="seasonName">Season Name:</label>
@@ -182,13 +185,9 @@ const StorySearch = () => {
     }
   };
 
-  
-
-const handleRadiusChange = (e) => {
-  setRadius(e.target.value);
-};
-
-
+  const handleRadiusChange = (e) => {
+    setRadius(e.target.value);
+  };
 
   const handleLocationSelect = () => {
     if (!autocompleteRef.current) {
@@ -270,7 +269,7 @@ const handleRadiusChange = (e) => {
             <input type="text" className="form-control" />
           </Autocomplete>
         </div>
-        <br/>
+        <br />
         <div className="form-group">
           <GoogleMap
             id="search-map"
@@ -281,6 +280,9 @@ const handleRadiusChange = (e) => {
             zoom={2}
             center={markerPosition}
             onClick={(e) => handleMarker(e)}
+            options={{
+              styles: mapStyle
+            }}
           >
             {locationSearch && (
               <Marker
@@ -290,7 +292,7 @@ const handleRadiusChange = (e) => {
               />
             )}
           </GoogleMap>
-          <br/>
+          <br />
           <div className="form-group">
             <label htmlFor="radius">Radius: {radius} km</label>
             <input
@@ -303,7 +305,9 @@ const handleRadiusChange = (e) => {
             />
           </div>
         </div>
-        <button className = "button" type="submit">Search</button>
+        <button className="button" type="submit">
+          Search
+        </button>
       </form>
       {stories.length > 0 && (
         <>

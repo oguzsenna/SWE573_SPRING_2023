@@ -60,11 +60,6 @@ function ProfilePage() {
           response.data.stories &&
           response.data.totalPages
         ) {
-          if (response.data.stories.length > 0) {
-            setUser(response.data.stories[0].author);
-          } else {
-            setUser(null);
-          }
           setStories(response.data.stories);
           setTotalPages(response.data.totalPages);
         } else {
@@ -78,43 +73,6 @@ function ProfilePage() {
 
     fetchStories();
   }, [page]);
-
-  const updateProfilePhotoUrl = () => {
-    if (profilePhotoFile) {
-      setProfilePhotoUrl(URL.createObjectURL(profilePhotoFile));
-    } else if (userDetails && userDetails.profile_photo) {
-      setProfilePhotoUrl(userDetails.profile_photo);
-    } else {
-      setProfilePhotoUrl(null);
-    }
-  };
-
-  const deleteStory = async (storyId) => {
-    const userConfirmation = window.confirm("Are you sure you want to delete this story?");
-    if (!userConfirmation) {
-      return;
-    }
-  
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:8000/api/delete/stories/${storyId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
-  
-      // Show a success message
-      window.alert("Story Deleted Successfully");
-  
-      // Remove the deleted story from the stories array
-      const updatedStories = stories.filter((story) => story.id !== storyId);
-      setStories(updatedStories);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
 
   useEffect(() => {
     const fetchProfilePhoto = async () => {
@@ -130,14 +88,14 @@ function ProfilePage() {
             responseType: "blob",
           }
         );
-
+  
         const imageUrl = URL.createObjectURL(response.data);
         setProfilePhotoUrl(imageUrl);
       } catch (error) {
         console.error(error);
       }
     };
-
+  
     fetchProfilePhoto();
   }, [userDetails]);
 
@@ -166,6 +124,47 @@ function ProfilePage() {
     fetchUserDetails();
   }, []);
 
+  const updateProfilePhotoUrl = () => {
+    if (profilePhotoFile) {
+      setProfilePhotoUrl(URL.createObjectURL(profilePhotoFile));
+    } else if (userDetails && userDetails.profile_photo) {
+      setProfilePhotoUrl(userDetails.profile_photo);
+    } else {
+      setProfilePhotoUrl(null);
+    }
+  };
+
+  const deleteStory = async (storyId) => {
+    const userConfirmation = window.confirm(
+      "Are you sure you want to delete this story?"
+    );
+    if (!userConfirmation) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(
+        `http://localhost:8000/api/delete/stories/${storyId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      // Show a success message
+      window.alert("Story Deleted Successfully");
+
+      // Remove the deleted story from the stories array
+      const updatedStories = stories.filter((story) => story.id !== storyId);
+      setStories(updatedStories);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
@@ -192,17 +191,15 @@ function ProfilePage() {
         }
       );
       if (response.status === 200) {
-        setUserDetails(response.data);
         setProfilePhotoFile(null);
         setProfilePhotoPreview(null);
         updateProfilePhotoUrl();
-        // Update the UI with the new data from the API
-        setNewBiography(response.data.biography || "");
       }
     } catch (error) {
       console.error(error);
     }
   };
+  
 
   const handleProfilePhotoDelete = async () => {
     try {
@@ -217,13 +214,13 @@ function ProfilePage() {
         }
       );
       if (response.status === 200) {
-        setUserDetails(response.data);
         setProfilePhotoUrl(null);
       }
     } catch (error) {
       console.error(error);
     }
   };
+  
 
   const editBiography = async () => {
     try {
@@ -257,15 +254,22 @@ function ProfilePage() {
       <div className="user-details">
         <div className="profile-photo-section">
           {profilePhotoUrl && <img src={profilePhotoUrl} alt="Profile photo" />}
-          {!profilePhotoFile && (
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleProfilePhotoChange}
-            />
-          )}
         </div>
-
+        <br />
+        <br />
+        {!profilePhotoFile && (
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleProfilePhotoChange}
+          />
+        )}
+        {profilePhotoFile && (
+          <div className="photo-preview">
+            <h4>Profile Photo Preview:</h4>
+            <img src={profilePhotoPreview} alt="Profile photo preview" />
+          </div>
+        )}
         <div>
           {profilePhotoFile && (
             <>
@@ -292,9 +296,8 @@ function ProfilePage() {
             <h3>Email</h3>
             <p>{userDetails.email}</p>
           </div>
-
+          <h3>Biography</h3>
           <div className="biography-section">
-            <h3>Biography</h3>
             {!editingBiography && <p>{userDetails.biography}</p>}
             {editingBiography && (
               <textarea
@@ -304,6 +307,9 @@ function ProfilePage() {
                 cols={50}
               />
             )}
+          </div>
+
+          <div>
             {!editingBiography && (
               <button
                 onClick={() => {
@@ -333,7 +339,6 @@ function ProfilePage() {
             <Link to={`/stories/details/${story.id}`}>{story.title}</Link>
           </h2>
           <button onClick={() => deleteStory(story.id)}>Delete</button>
-          {/* display other fields as needed */}
         </div>
       ))}
       <Pagination
