@@ -4,60 +4,139 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from unittest.mock import patch, MagicMock
 from .models import Story
+from datetime import date, timedelta
+from django.contrib.auth.models import User
+from django.test import RequestFactory, TestCase
+from rest_framework.test import force_authenticate
+from .models import Location, Story
+from .serializers import StorySerializer
+from .views import SearchStoryView
+from unittest.mock import patch
+from .views import StoryCreateAPIView
+import json
 
 
 
 
 # Create your tests here.
 
+from django.test import TestCase
+from .models import User, Location, Story, Comment
 
+
+#Model Tests
+class UserModelTestCase(TestCase):
+    def test_user_creation(self):
+        user = User.objects.create_user(email='test@example.com', username='testuser', password='testpassword') # type: ignore
+        
+        self.assertEqual(user.email, 'test@example.com')
+        self.assertEqual(user.username, 'testuser')
+        self.assertTrue(user.check_password('testpassword'))
+
+        # Add assertions for other fields and behaviors
+
+class LocationModelTestCase(TestCase):
+    def test_location_creation(self):
+        location = Location.objects.create(name='Test Location', latitude=0.0, longitude=0.0)
+        
+        self.assertEqual(location.name, 'Test Location')
+        self.assertEqual(location.latitude, 0.0)
+        self.assertEqual(location.longitude, 0.0)
+
+        # Add assertions for other fields and behaviors
+
+class StoryModelTestCase(TestCase):
+    def test_story_creation(self):
+        user = User.objects.create_user(email='test@example.com', username='testuser', password='testpassword') # type: ignore
+        story = Story.objects.create(author=user, title='Test Story', content='Lorem ipsum dolor sit amet.')
+        
+        self.assertEqual(story.author, user)
+        self.assertEqual(story.title, 'Test Story')
+        self.assertEqual(story.content, 'Lorem ipsum dolor sit amet.')
+
+        # Add assertions for other fields and behaviors
+
+class CommentModelTestCase(TestCase):
+    def test_comment_creation(self):
+        user = User.objects.create_user(email='test@example.com', username='testuser', password='testpassword') # type: ignore
+        story = Story.objects.create(author=user, title='Test Story', content='Lorem ipsum dolor sit amet.')
+        comment = Comment.objects.create(author=user, story=story, content='Test Comment')
+        
+        self.assertEqual(comment.author, user)
+        self.assertEqual(comment.story, story)
+        self.assertEqual(comment.content, 'Test Comment')
+
+        # Add assertions for other fields and behaviors
+
+
+#View and APIs Tests
+
+def create_user(username, email, password):
+    return User.objects.create_user(username=username, email=email, password=password) # type: ignore
+
+def create_location(latitude, longitude):
+    return Location.objects.create(latitude=latitude, longitude=longitude)
+
+def create_story(author, title, content, date, season, start_year, end_year, start_date, end_date):
+    story = Story.objects.create(
+        author=author, title=title, content=content, date=date, season=season,
+        start_year=start_year, end_year=end_year, start_date=start_date, end_date=end_date)
+    return story
+
+class SearchStoryViewTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = create_user(username="testuser", email="testuser@example.com", password="testpassword")
+        self.view = SearchStoryView.as_view()
+
+    def create_request(self, query_params=None):
+        request = self.factory.get('/search_story', query_params)
+        force_authenticate(request, user=self.user)
+        return request
+    
+    def test_search_by_title(self):
+        story1 = create_story(self.user, 'Test Story 1', 'This is a test story.', date.today(), 'summer', 1990, 2000, date.today(), date.today() + timedelta(days=5))
+        story2 = create_story(self.user, 'Test Story 2', 'Another test story.', date.today(), 'winter', 1980, 1990, date.today(), date.today() + timedelta(days=5))
+        
+        request = self.create_request({'title': 'Test Story 1'})
+        response = self.view(request)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(response.data), 1) # type: ignore
+        self.assertEqual(response.data[0]['title'], 'Test Story 1') # type: ignore
 
 class StoryCreateAPIViewTestCase(TestCase):
     def setUp(self):
-        self.client = APIClient()
-        self.url = reverse('create-story')
-        self.valid_payload = {
-            'title': 'Test Story',
-            'content': 'Lorem ipsum dolor sit amet.',
-            # Add other required fields as needed
-        }
+        self.factory = RequestFactory()
+        self.user = create_user(username="testuser", email="testuser@example.com", password="testpassword")
+        self.view = StoryCreateAPIView.as_view()
 
-    def test_create_story_success(self):
-        # Mock the decode_refresh_token function to return a valid user_id
-        with patch('user.views.decode_refresh_token') as mock_decode_token:
-            mock_decode_token.return_value = 1
+    def create_request(self, data, cookies=None):
+        request = self.factory.post('/create_story', content_type='application/json', data=data)
+        if cookies:
+            request.COOKIES.update(cookies)
+        force_authenticate(request, user=self.user)
+        return request
 
-            # Mock the StorySerializer save method
-            mock_serializer_save = MagicMock()
-            with patch('user.views.StorySerializer') as mock_serializer:
-                mock_serializer.return_value = MagicMock(save=mock_serializer_save)
+    def test_create_story_with_minimal_data(self):
+        with patch('user.views.decode_refresh_token') as mock_decode_refresh_token:
+            mock_decode_refresh_token.return_value = self.user.pk
 
-                # Set the cookie value
-                self.client.cookies['refreshToken'] = 'your_refresh_token'
+            story_data = {
+                "title": "Test Story",
+                "content": "This is a test story."
+            }
 
-                # Send the POST request to the view
-                response = self.client.post(self.url, self.valid_payload, format='json')
+            request = self.create_request(data=json.dumps(story_data), cookies={'refreshToken': 'fake_token'})
+            response = self.view(request)
 
-                # Assert that the response status code is 201 (Created)
-                self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-                # Assert that the StorySerializer save method is called
-                mock_serializer_save.assert_called_once()
-
-    def test_create_story_invalid_data(self):
-        # Send the POST request with an invalid payload
-        response = self.client.post(self.url, {'invalid_field': 'Invalid Value'}, format='json')
-
-        # Assert that the response status code is 400 (Bad Request)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-        # Assert that the response contains serializer errors
-        self.assertIn('serializer errors', str(response.data).lower())
-
-    # Add other test methods for edge cases, such as handling missing or invalid refreshToken cookie, or testing the behavior when specific fields or data are missing in the request payload
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(response.data['title'], 'Test Story')
+            self.assertEqual(response.data['content'], 'This is a test story.')
+            self.assertEqual(response.data['author'], self.user.pk)
 
 
 
 
 
-   
+

@@ -39,6 +39,9 @@ const StorySearch = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
 
+    setStories([]); // Clear the previous search results
+
+
     let timeValueObj = {};
 
     switch (timeType) {
@@ -62,30 +65,37 @@ const StorySearch = () => {
     }
 
     try {
-      const response = await axios.get(
-        "http://localhost:8000/api/search_story",
-        {
-          params: {
-            title: titleSearch,
-            author: authorSearch,
-            time_type: timeType,
-            time_value: JSON.stringify(timeValueObj),
-            location: JSON.stringify(locationSearch),
-            radius: radius,
-          },
-          withCredentials: true,
-        }
-      );
-      if (response.data.length > 0) {
-        setIsEmptySearch(false);
-        setStories(response.data);
-      } else {
-        setIsEmptySearch(true);
+    const response = await axios.get(
+      "http://localhost:8000/api/search_story",
+      {
+        params: {
+          title: titleSearch,
+          author: authorSearch,
+          time_type: timeType,
+          time_value: JSON.stringify(timeValueObj),
+          location: JSON.stringify(locationSearch),
+          radius: radius,
+        },
+        withCredentials: true,
       }
-    } catch (error) {
-      console.error("Error fetching stories:", error);
+    );
+    if (response.data.length > 0) {
+      setIsEmptySearch(false);
+      setStories(response.data);
+    } else {
+      setIsEmptySearch(true);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching stories:", error);
+  }
+};
+
+
+
+
+
+
+
 
   const renderTimeInput = () => {
     switch (timeType) {
@@ -275,7 +285,7 @@ const StorySearch = () => {
             id="search-map"
             mapContainerStyle={{
               width: "100%",
-              height: "400px",
+              height: "500px",
             }}
             zoom={2}
             center={markerPosition}

@@ -20,7 +20,7 @@ urlpatterns = [
     path('user/<int:user_id>/followers/', FollowerListView.as_view()),
     path('stories/comment/<int:story_id>', CommentAPIView.as_view(), name='comment-list'),
     path('biography', UserBiographyAPIView.as_view(), name='user-biography'),    
-    path('register/', views.RegisterAPIView.as_view()),
+    path('register/', views.RegisterAPIView.as_view(),name = 'create_user'),
     path('stories/author', GetStoryByAuthorIDView.as_view()),
     path('stories/user', GetStoryByUserIDView.as_view(), name='get-story-by-user-id'),
     path('stories/<int:story_id>/comments/', StoryCommentListAPIView.as_view(), name='story-comment-list'),

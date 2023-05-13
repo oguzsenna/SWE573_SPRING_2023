@@ -358,7 +358,7 @@ function CreateStory() {
         </div>
         <div className="create-story-map">
           <GoogleMap
-            mapContainerStyle={{ height: "400px", width: "400px" }}
+            mapContainerStyle={{ height: "500px", width: "500px" }}
             center={mapCenter}
             zoom={1}
             onClick={handleMapClick}
