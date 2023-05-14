@@ -1,11 +1,13 @@
-FROM node:lts-alpine
+FROM node:18
 
 WORKDIR /app
 
-ENV PATH /app/node_modules/.bin:$PATH
+COPY package*.json ./
 
-COPY package.json .
-COPY package-lock.json .
 RUN npm install
 
-CMD ["npm", "run", "serve"]
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
