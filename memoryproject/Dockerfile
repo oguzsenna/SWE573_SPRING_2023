@@ -1,0 +1,20 @@
+FROM python:3.11
+
+WORKDIR /memoryproject
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY manage.py .
+
+COPY memoryproject/ ./memoryproject
+
+COPY user/ ./user
+
+COPY media/ ./media
+
+EXPOSE 8000
+
+
+
+CMD python manage.py migrate && python manage.py runserver 0.0.0.0:8000

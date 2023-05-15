@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useParams,useNavigate } from 'react-router-dom';
-import './UserSearch.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import "./UserSearch.css";
 
-
-
-function SearchUserResults({  }) {
+function SearchUserResults({}) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const { searchQuery } = useParams();
@@ -28,7 +26,7 @@ function SearchUserResults({  }) {
           `http://localhost:8000/api/search_user?search=${searchQuery}`,
           { withCredentials: true }
         );
-        console.log('searchResponse:', searchResponse);
+        console.log("searchResponse:", searchResponse);
         setResults(searchResponse.data.users);
       } catch (error) {
         console.log(error);
@@ -45,10 +43,19 @@ function SearchUserResults({  }) {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        results.map(user => (
-          <div key={user.username} onClick={() => handleUserClick(user.username)}>
-            <a className="username" href={`/users/${user.username}`}>{user.username}</a>
-          </div>
+        results.map((user) => (
+          <ul>
+            <li>
+              <div
+                key={user.username}
+                onClick={() => handleUserClick(user.username)}
+              >
+                <a className="username" href={`/users/${user.username}`}>
+                  {user.username}
+                </a>
+              </div>
+            </li>
+          </ul>
         ))
       )}
     </div>

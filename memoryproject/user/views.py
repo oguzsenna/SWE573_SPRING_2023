@@ -34,6 +34,24 @@ from datetime import datetime, timedelta
 
 
 # Create your views here.
+class DeleteStoryView(APIView):
+    def delete(self, request, story_id):
+        cookie_value = request.COOKIES['refreshToken']
+        if not cookie_value:
+            return Response({'error': 'Refresh token not found.'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        user_id = decode_refresh_token(cookie_value)
+        if not user_id:
+            return Response({'error': 'Invalid token.'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        try:
+            story = Story.objects.get(id=story_id, author_id=user_id)
+            story.delete()
+            return Response({'message': 'Story deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        except Story.DoesNotExist:
+            return Response({'error': 'Story not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        
 class UserProfileByUsernameView(APIView):
     def get(self, request, username):
         user = get_object_or_404(User, username=username)

@@ -5,8 +5,8 @@ import { useParams } from "react-router-dom";
 import { GoogleMap, LoadScriptNext, Marker } from "@react-google-maps/api";
 import { Link } from "react-router-dom";
 import CommentSection from "./CommentSection.js";
-
-
+import mapStyle from './mapStyle.json';
+import ReactQuill from "react-quill";
 
 
 const containerStyle = {
@@ -115,18 +115,29 @@ function StoryDetail() {
 
   return (
     <div>
+      <Link to="/homepage">Go back</Link>
       <h2>{story.title}</h2>
-      <p>Author: {story.author_username}</p>
-
-      {story.content && (
-        <div
-          className="story-content"
-          dangerouslySetInnerHTML={{ __html: story.content }}
-        />
-      )}
+      <p>
+        {" "}
+        <h3>Author:</h3> {story.author_username}
+      </p>
+      <h3>Content</h3>
+      <ReactQuill
+              value={story.content}
+              readOnly={true}
+              modules={{ toolbar: false }}
+            />
       {story.story_tags.length > 0 && (
-        <p>Story Tags: {story.story_tags.join(", ")}</p>
-      )}
+      <p>
+        <h3>Story Tags:</h3>
+        {story.story_tags.map((tag, index) => (
+          <span key={index} className="tag-container">
+            {tag}
+          </span>
+        ))}
+      </p>
+    )}
+      <br />
       {story.date && <p>Date: {story.date}</p>}
       {story.season && <p>Season: {story.season}</p>}
       {story.start_year && <p>Start Year: {story.start_year}</p>}
@@ -148,6 +159,9 @@ function StoryDetail() {
               mapContainerStyle={containerStyle}
               center={center}
               zoom={10}
+              options={{
+                styles: mapStyle
+              }}
             >
               <StoryMarkers locations={story.locations} />
             </GoogleMap>
@@ -155,20 +169,20 @@ function StoryDetail() {
           <div className="like-container">
             <button className="like-button" onClick={toggleLike}>
               <i
-                className={`fas ${liked ? "fa-heart" : "fa-heart-o"}`} 
+                className={`fas ${liked ? "fa-heart" : "fa-heart-o"}`}
                 aria-hidden="true"
               />
               {liked ? " Unlike" : " Like"}
             </button>
             <span className="like-count">
-            {likeCount} {likeCount === 1 || likeCount === 0 ? "Like" : "Likes"}
+              {likeCount}{" "}
+              {likeCount === 1 || likeCount === 0 ? "Like" : "Likes"}
             </span>
           </div>
         </>
       )}
       <CommentSection story_id={story_id} />
-
-      <Link to="/homepage">Go back</Link>
+    
     </div>
   );
 }

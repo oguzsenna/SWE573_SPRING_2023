@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "react-datepicker": "^4.11.0",
-    "react-router-dom": "^6.10.0"
-  }
-}

@@ -13,6 +13,8 @@ import { useNavigate } from "react-router-dom";
 //css files
 import "react-datepicker/dist/react-datepicker.css";
 import "./story.css";
+import mapStyle from './mapStyle.json';
+
 
 function CreateStory() {
   const [title, setTitle] = useState("");
@@ -36,8 +38,8 @@ function CreateStory() {
       [{ header: [1, 2, false] }],
       ["bold", "italic", "underline", "strike", "blockquote"],
       [{ list: "ordered" }, { list: "bullet" }],
-      ["link", "image", "video"]
-    ]
+      ["link", "image", "video"],
+    ],
   };
 
   const formats = [
@@ -52,9 +54,8 @@ function CreateStory() {
     "indent",
     "link",
     "image",
-    "video"
+    "video",
   ];
-
 
   useEffect(() => {
     setSelectedSeason(null);
@@ -155,7 +156,7 @@ function CreateStory() {
       const { results } = response.data;
       if (results.length > 0) {
         const locationData = {
-          name: results[0].formatted_address,
+          name: results[1].formatted_address,
           latitude: Number(lat.toFixed(6)),
           longitude: Number(lng.toFixed(6)),
         };
@@ -207,9 +208,9 @@ function CreateStory() {
               <option value="Summer">Summer</option>
               <option value="Fall">Fall</option>
             </select>
-            <br/>
-            <br/>
-            
+            <br />
+            <br />
+
             <input
               type="text"
               placeholder="Start Year"
@@ -222,7 +223,7 @@ function CreateStory() {
               placeholder="End year"
               value={end_year}
               onChange={(event) => setEndYear(event.target.value)}
-            /> 
+            />
             <button type="button" onClick={handleClearFilter}>
               Clear filter
             </button>
@@ -236,7 +237,7 @@ function CreateStory() {
               type="date"
               className="form-control"
               onChange={(date) => setStartDate(date.target.value)}
-            /> 
+            />
             {" - "}
             <input
               type="date"
@@ -299,12 +300,11 @@ function CreateStory() {
             <br />
             <label>Content:</label>
             <ReactQuill
-              modules= {modules}
+              modules={modules}
               formats={formats}
               value={content}
               className="custom-input"
               onChange={setContent}
-              
             />
             <br />
             <label>
@@ -350,17 +350,22 @@ function CreateStory() {
             <br />
             <br />
 
-            <button className="create-story-button" type="submit">Create Story</button>
+            <button className="create-story-button" type="submit">
+              Create Story
+            </button>
           </form>
           <br />
         </div>
         <div className="create-story-map">
           <GoogleMap
-            mapContainerStyle={{ height: "400px", width: "400px" }}
+            mapContainerStyle={{ height: "500px", width: "500px" }}
             center={mapCenter}
             zoom={1}
             onClick={handleMapClick}
             onLoad={handleMapLoad}
+            options={{
+              styles: mapStyle
+            }}
           >
             {searchBox && (
               <Autocomplete
@@ -375,8 +380,8 @@ function CreateStory() {
               <Marker
                 key={index}
                 position={{ lat: loc.latitude, lng: loc.longitude }}
-                onClick={() => {
-                }}
+                onClick={() => {}}
+                
               />
             ))}
           </GoogleMap>

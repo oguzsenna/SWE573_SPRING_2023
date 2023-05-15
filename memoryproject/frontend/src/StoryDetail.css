@@ -63,3 +63,20 @@
   .heart-clicked:active {
     transform: scale(3.1)
   }
+
+  .tag-container {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 2px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #363d51;
+    font-weight: bold;
+    cursor: default;
+    transition: all 0.2s;
+    color: white;
+  }
+  
+  .tag-container:hover {
+    background-color: #c2bebe;
+  }

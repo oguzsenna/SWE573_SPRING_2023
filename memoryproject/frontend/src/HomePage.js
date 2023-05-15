@@ -75,15 +75,19 @@ function HomePage() {
       </div>
       {stories.map((story) => (
         <div key={story.id}>
-          <h2>
-            <Link to={`/stories/details/${story.id}`}>{story.title}</Link>
-          </h2>
-          <p>
-            Author:{" "}
-            <Link to={`/users/${story.author_username}`}>
-              {story.author_username}
-            </Link>
-          </p>
+          <ul>
+            <li>
+              <h2>
+                <Link to={`/stories/details/${story.id}`}>{story.title}</Link>
+              </h2>
+              <p>
+                Author:{" "}
+                <Link to={`/users/${story.author_username}`}>
+                  {story.author_username}
+                </Link>
+              </p>
+            </li>
+          </ul>
         </div>
       ))}
       <Pagination

@@ -1,110 +1,109 @@
 /* HomePage.css */
 .home-page-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    grid-gap: 1rem;
-    padding: 1rem;
-  }
-  
-  .story-card {
-    background-color: #f1f1f1;
-    padding: 1rem;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-  }
-  
-  .story-card-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-  
-  .story-card-author {
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-  }
-  
-  .story-card-tags {
-    font-size: 0.8rem;
-    margin-top: 0.5rem;
-  }
-  
-  .home-page {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding: 20px;
-  }
-  
-  .search-bar {
-    grid-column: 1 / span 2;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .search-bar input[type='text'] {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .search-bar button {
-    padding: 10px;
-    background-color: #0066cc;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-  }
-  
-  .search-bar button i {
-    font-size: 16px;
-  }
-  
-  .stories {
-    grid-column: 1 / span 3;
-  }
-  
-  .stories h2 {
-    font-size: 24px;
-    margin: 0;
-  }
-  
-  .stories p {
-    margin: 0;
-  }
-  
-  .stories p a {
-    color: #0066cc;
-    text-decoration: none;
-  }
-  
-  .pagination {
-    grid-column: 1 / span 3;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-  }
-  
-  .pagination button {
-    padding: 10px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-  }
-  
-  .pagination button.active {
-    background-color: #0066cc;
-    color: #fff;
-    border-color: #0066cc;
-  }
-  
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-gap: 1rem;
+  padding: 1rem;
+}
+
+.story-card {
+  background-color: #f1f1f1;
+  padding: 1rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.story-card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.story-card-author {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.story-card-tags {
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.home-page {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+.search-bar {
+  grid-column: 1 / span 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-bar input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar button {
+  padding: 10px;
+  background-color: #0066cc;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.search-bar button i {
+  font-size: 16px;
+}
+
+.stories {
+  grid-column: 1 / span 3;
+}
+
+.stories h2 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.stories p {
+  margin: 0;
+}
+
+.stories p a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.pagination {
+  grid-column: 1 / span 3;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pagination button {
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.pagination button.active {
+  background-color: #0066cc;
+  color: #fff;
+  border-color: #0066cc;
+}

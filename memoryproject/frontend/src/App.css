@@ -71,10 +71,7 @@
   height: auto;
 }
 
-
-
 .button {
-  
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -93,16 +90,15 @@
 }
 
 .custombg {
+  box-sizing: border-box;
 
-box-sizing: border-box;
+  position: relative;
+  width: 985px;
+  height: 1011px;
 
-position: relative;
-width: 985px;
-height: 1011px;
-
-background: #363636;
-border: 1px solid rgba(0, 0, 0, 0.1);
-border-radius: 2px;
+  background: #363636;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
 }
 
 select[name="date_filter"] {
@@ -111,7 +107,7 @@ select[name="date_filter"] {
 }
 
 body {
-  background-image: url('https://media.tenor.com/NH_dhrT0B6MAAAAC/white-aesthetic.gif');
+  background-image: url("https://media.tenor.com/NH_dhrT0B6MAAAAC/white-aesthetic.gif");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;

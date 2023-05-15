@@ -8,10 +8,10 @@ function Logout() {
       console.log('Request Headers:', response.config.headers);
       console.log('Response Headers:', response.headers);
       if (response.data.message === 'success') {
-        // Clear any user-related data from your application state here if needed
+        // Clear any user-related data from application 
         localStorage.removeItem('token');
 
-        // Redirect to the home page or the login page after successful logout
+        // Redirect to the landing or the login page after successful logout
         window.location.href = '/';
       }
     } catch (error) {
