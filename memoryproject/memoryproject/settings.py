@@ -166,7 +166,7 @@ backend_host_ip = env('BACKEND_HOST_IP')
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    f"http://{backend_host_ip}:3000", 
+    f"http://{backend_host_ip}:3000",
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
