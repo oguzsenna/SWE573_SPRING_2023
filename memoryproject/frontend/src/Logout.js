@@ -4,7 +4,7 @@ import axios from 'axios';
 function Logout() {
   const handleLogoutClick = async () => {
     try {
-      const response = await axios.post('http://localhost:8000/api/logout',{}, { withCredentials: true });
+      const response = await axios.post(`http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/logout`,{}, { withCredentials: true });
       console.log('Request Headers:', response.config.headers);
       console.log('Response Headers:', response.headers);
       if (response.data.message === 'success') {

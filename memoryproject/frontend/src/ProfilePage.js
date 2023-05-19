@@ -41,7 +41,7 @@ function ProfilePage() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:8000/api/stories/user",
+          `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/stories/user`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -79,7 +79,7 @@ function ProfilePage() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:8000/api/profile/photo",
+          `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/profile/photo`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -103,7 +103,7 @@ function ProfilePage() {
     const fetchUserDetails = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:8000/api/user", {
+        const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/user`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -145,7 +145,7 @@ function ProfilePage() {
     try {
       const token = localStorage.getItem("token");
       await axios.delete(
-        `http://localhost:8000/api/delete/stories/${storyId}`,
+        `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/delete/stories/${storyId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -181,7 +181,7 @@ function ProfilePage() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.put(
-        "http://localhost:8000/api/profile/photo",
+        `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/profile/photo`,
         formData,
         {
           headers: {
@@ -205,7 +205,7 @@ function ProfilePage() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.delete(
-        "http://localhost:8000/api/profile/photo",
+        `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/profile/photo`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -226,7 +226,7 @@ function ProfilePage() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.put(
-        "http://localhost:8000/api/biography",
+        `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/biography`,
         { biography: newBiography },
         {
           headers: {

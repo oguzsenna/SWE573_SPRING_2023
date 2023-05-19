@@ -66,7 +66,7 @@ const StorySearch = () => {
 
     try {
     const response = await axios.get(
-      "http://localhost:8000/api/search_story",
+      `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/search_story`,
       {
         params: {
           title: titleSearch,

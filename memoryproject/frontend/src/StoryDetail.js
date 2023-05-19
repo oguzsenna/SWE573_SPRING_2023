@@ -22,7 +22,7 @@ function StoryDetail() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/stories/details/${story_id}`, {
+      .get(`http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/stories/details/${story_id}`, {
         withCredentials: true,
       })
       .then((response) => {
@@ -59,7 +59,7 @@ function StoryDetail() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `http://localhost:8000/api/like/${story_id}`,
+        `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/like/${story_id}`,
         {},
         {
           headers: {
@@ -90,7 +90,7 @@ function StoryDetail() {
   async function fetchComments() {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/stories/${story_id}/comments/`
+        `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/stories/${story_id}/comments/`
       );
       if (response.status === 200) {
         fetchComments(response.data);
