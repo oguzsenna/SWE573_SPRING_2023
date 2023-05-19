@@ -12,12 +12,12 @@ function CommentSection({ story_id }) {
   async function fetchComments() {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/stories/${story_id}/comments/`
+        `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/stories/${story_id}/comments/`
       );
       if (response.status === 200) {
         const authorIds = response.data.map((comment) => comment.author);
         const authorResponse = await axios.get(
-          `http://localhost:8000/api/usernamesbyId`,
+          `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/usernamesbyId`,
           {
             params: { user_ids: authorIds },
           }
@@ -45,7 +45,7 @@ function CommentSection({ story_id }) {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `http://localhost:8000/api/stories/comment/${story_id}`,
+        `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/stories/comment/${story_id}`,
         { content: newComment },
         {
           headers: {

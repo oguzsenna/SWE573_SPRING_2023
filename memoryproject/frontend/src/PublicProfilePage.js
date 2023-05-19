@@ -17,7 +17,7 @@ function PublicProfilePage() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:8000/api/profile/photo/${user.id}`,
+        `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/profile/photo/${user.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -38,7 +38,7 @@ function PublicProfilePage() {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/users/${username}`
+          `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/users/${username}`
         );
         setUser(response.data);
       } catch (error) {
@@ -49,7 +49,7 @@ function PublicProfilePage() {
     const fetchStories = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/stories/${username}`
+          `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/stories/${username}`
         );
         setStories(response.data.stories);
       } catch (error) {
@@ -70,7 +70,7 @@ function PublicProfilePage() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `http://localhost:8000/api/user/follow/${user.id}`,
+        `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/user/follow/${user.id}`,
         {},
         {
           headers: {

@@ -27,7 +27,7 @@ function Register() {
   const handleSubmit = (event) => {
     event.preventDefault();
     axios
-      .post("http://localhost:8000/api/register/", formData)
+      .post(`http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/register/`, formData)
       .then((response) => {
         console.log(response.data);
         toast.success("User created successfully");

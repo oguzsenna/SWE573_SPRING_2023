@@ -25,7 +25,7 @@ function App() {
 
   const fetchUserDetails = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/user", {
+      const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/user`, {
         withCredentials: true,
       });
       if (response && response.data) {

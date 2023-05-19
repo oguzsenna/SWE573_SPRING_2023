@@ -13,8 +13,7 @@ import { useNavigate } from "react-router-dom";
 //css files
 import "react-datepicker/dist/react-datepicker.css";
 import "./story.css";
-import mapStyle from './mapStyle.json';
-
+import mapStyle from "./mapStyle.json";
 
 function CreateStory() {
   const [title, setTitle] = useState("");
@@ -86,7 +85,7 @@ function CreateStory() {
       try {
         console.log("Submitting the form");
         const response = await axios.post(
-          "http://localhost:8000/api/create_story",
+          `http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/create_story`,
           {
             title,
             content,
@@ -364,7 +363,7 @@ function CreateStory() {
             onClick={handleMapClick}
             onLoad={handleMapLoad}
             options={{
-              styles: mapStyle
+              styles: mapStyle,
             }}
           >
             {searchBox && (
@@ -381,7 +380,6 @@ function CreateStory() {
                 key={index}
                 position={{ lat: loc.latitude, lng: loc.longitude }}
                 onClick={() => {}}
-                
               />
             ))}
           </GoogleMap>

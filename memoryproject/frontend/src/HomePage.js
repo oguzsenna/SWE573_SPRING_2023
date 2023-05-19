@@ -32,7 +32,7 @@ function HomePage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/stories/author", {
+      .get(`http://${process.env.REACT_APP_BACKEND_HOST_NAME}:8000/api/stories/author`, {
         params: { page, perPage },
         withCredentials: true,
       })
