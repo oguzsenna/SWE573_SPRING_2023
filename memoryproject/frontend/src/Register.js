@@ -43,7 +43,7 @@ function Register() {
       })
       .catch((error) => {
         console.log(error.response.data);
-        toast.error("User already exists");
+        toast.error("Make sure you enter valid credentials");
         setFormData({
           ...formData,
           password: "",
@@ -52,7 +52,7 @@ function Register() {
           email: "",
         }); // reset the password fields
       });
-  }; // <--- add this closing brace
+  }; 
 
   return (
     <div>
