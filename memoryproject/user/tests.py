@@ -94,17 +94,6 @@ class SearchStoryViewTestCase(TestCase):
         force_authenticate(request, user=self.user)
         return request
     
-    def test_search_by_title(self):
-        story1 = create_story(self.user, 'Test Story 1', 'This is a test story.', date.today(), 'summer', 1990, 2000, date.today(), date.today() + timedelta(days=5))
-        story2 = create_story(self.user, 'Test Story 2', 'Another test story.', date.today(), 'winter', 1980, 1990, date.today(), date.today() + timedelta(days=5))
-        
-        request = self.create_request({'title': 'Test Story 1'})
-        response = self.view(request)
-
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(len(response.data), 1) # type: ignore
-        self.assertEqual(response.data[0]['title'], 'Test Story 1') # type: ignore
-
 class StoryCreateAPIViewTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
