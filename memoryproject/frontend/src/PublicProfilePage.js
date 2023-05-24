@@ -105,6 +105,7 @@ function PublicProfilePage() {
   return (
     <div>
       <h1>{user.username}</h1>
+      <div className="profile-photo-section">
       {profilePhotoUrl && (
         <img
           src={profilePhotoUrl}
@@ -112,6 +113,8 @@ function PublicProfilePage() {
           className="profile-photo"
         />
       )}
+        
+      </div>
       <div className="biography-section">
         <h2>Biography</h2>
         <p>{user.biography}</p>
