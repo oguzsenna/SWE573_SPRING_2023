@@ -265,10 +265,12 @@ function ProfilePage() {
           />
         )}
         {profilePhotoFile && (
-          <div className="photo-preview">
+          <div className="profile-photo-section">
+          <div className="profile-photo-preview">
             <h4>Profile Photo Preview:</h4>
             <img src={profilePhotoPreview} alt="Profile photo preview" />
           </div>
+        </div>
         )}
         <div>
           {profilePhotoFile && (

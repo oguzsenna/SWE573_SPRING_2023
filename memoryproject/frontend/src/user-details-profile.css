@@ -76,3 +76,19 @@
   font-size: 48px;
   color: #ffffff;
 }
+
+.profile-photo-section {
+  display: flex;
+  justify-content: center;
+}
+
+.profile-photo-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.profile-photo-preview h4 {
+  margin-bottom: 10px;
+}
