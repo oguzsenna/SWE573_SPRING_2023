@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "user",
     'ckeditor',
+    'corsheaders',
 ]
 
 CKEDITOR_CONFIGS = {
